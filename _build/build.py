@@ -405,10 +405,10 @@ team = [
     ("Galactic Dust Bunny", 'CAD Guru & Lead of "Stopping Nomad from Doing it Wrong"'),
     ("Mitch 3D", "Designer of Backpacks & Crazy Delta Machines"),
     ("Koosh", "The Accountant & Proton Designer"),
-    ("Birb", "Designer and Professional Procrastinator"),
+    ("Birb", "Designer"),
     ("Safe", "Prusawire Shill & Maintainer"),
     ("Erikbuilds", "Software Dev & Documentation God"),
-    ("NexusAvenger", "Roblox Memer"),
+    ("TheNexusAvenger", "Klipper Profiles Maintainer & Software Engineer"),
 ]
 team_cards = "\n        ".join(
     f'<div class="team-card"><div class="name">{n}</div><div class="role">{r}</div></div>' for n, r in team)
