@@ -92,7 +92,7 @@ FOOTER = f'''  <footer class="site-footer">
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© 2026 Positron 3D, LLC</span>
+        <span>© 2026 Positron3D Design Group</span>
         <span>Open source · Built by the community</span>
       </div>
     </div>
@@ -397,15 +397,18 @@ write("documentation.html", page("documentation", "Documentation | Positron 3D",
 
 # ---------------------------------------------------------------- CREDITS
 team = [
-    ("The Nomad", "CEO / Professional Cat Wrangler"),
+    ("The Nomad", "Founder, Creative Lead"),
     ("Joescalon", "Pi Manager & Wiki Guru + Printer Go Brrrinator"),
     ("Smiksky", "Software Steward & GitHub Grappler"),
     ("Physx", "Cybersecurity & Community Relations"),
     ("ZakAss", "Master of Metal & RedNeck Engineering Consultant"),
     ("Galactic Dust Bunny", 'CAD Guru & Lead of "Stopping Nomad from Doing it Wrong"'),
     ("Mitch 3D", "Designer of Backpacks & Crazy Delta Machines"),
-    ("Zolon", "Longevity & Portability Tester & Herder of Puppies"),
+    ("Koosh", "The Accountant & Proton Designer"),
     ("Birb", "Designer and Professional Procrastinator"),
+    ("Safe", "Prusawire Shill & Maintainer"),
+    ("Erikbuilds", "Software Dev & Documentation God"),
+    ("NexusAvenger", "Roblox Memer"),
 ]
 team_cards = "\n        ".join(
     f'<div class="team-card"><div class="name">{n}</div><div class="role">{r}</div></div>' for n, r in team)
@@ -475,22 +478,12 @@ contact_body = page_hero("About &amp; Contact", "Get in touch with the team behi
 
   <section class="section section--alt">
     <div class="container">
-      <h2 class="center">Contact Us</h2>
-      <div class="prose center" style="margin:0 auto 30px">
-        <div class="note">The Contact Us form is <b>not</b> to be used for asking for printers or sponsorships. Please use this for <b>business inquiries only.</b></div>
+      <div class="prose center" style="margin:0 auto">
+        <p class="eyebrow">Join the community</p>
+        <h2>Talk to us on Discord</h2>
+        <p class="lead">The fastest way to reach the team — and the best place for build help, mods, and community support — is our Discord.</p>
+        <a class="btn" href="https://discord.gg/positron" target="_blank" rel="noopener"><svg viewBox="0 -28.5 256 256" width="20" height="20" preserveAspectRatio="xMidYMid"><path fill="currentColor" fill-rule="nonzero" d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z"/></svg> Join our Discord</a>
       </div>
-      <form class="prose" style="margin:0 auto" action="https://formspree.io/f/your-form-id" method="POST">
-        <div class="form-grid">
-          <div class="field"><label for="name">Your Name <span class="req">*</span></label><input id="name" name="name" required></div>
-          <div class="field"><label for="phone">Phone Number</label><input id="phone" name="phone" type="tel"></div>
-          <div class="field"><label for="email">Your Email <span class="req">*</span></label><input id="email" name="email" type="email" required></div>
-          <div class="field"><label for="company">Your Company</label><input id="company" name="company"></div>
-          <div class="field field--full"><label for="subject">Subject <span class="req">*</span></label><input id="subject" name="subject" required></div>
-          <div class="field field--full"><label for="question">Your Question <span class="req">*</span></label><textarea id="question" name="question" required></textarea></div>
-          <div class="field field--full"><button class="btn" type="submit">Submit</button></div>
-        </div>
-      </form>
-      <p class="center" style="margin-top:24px;color:var(--muted)">Our team will message you back as soon as possible.</p>
     </div>
   </section>'''
 write("contact.html", page("contact", "About & Contact | Positron 3D",
