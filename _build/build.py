@@ -405,6 +405,7 @@ team = [
     ("Galactic Dust Bunny", 'CAD Guru & Lead of "Stopping Nomad from Doing it Wrong"'),
     ("Mitch 3D", "Designer of Backpacks & Crazy Delta Machines"),
     ("Zolon", "Longevity & Portability Tester & Herder of Puppies"),
+    ("Birb", "Designer and Professional Procrastinator"),
 ]
 team_cards = "\n        ".join(
     f'<div class="team-card"><div class="name">{n}</div><div class="role">{r}</div></div>' for n, r in team)
