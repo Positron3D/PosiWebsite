@@ -196,7 +196,7 @@ p  { margin: 0 0 1rem; color: var(--muted); }
   padding: 30px 20px; text-align: center; transition: border-color .2s ease, transform .2s ease;
 }
 .logo-card:hover { border-color: var(--accent); transform: translateY(-4px); }
-.logo-card__chip { background: #f4f4f5; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: grid; place-items: center; height: 96px; }
+.logo-card__chip { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; display: grid; place-items: center; height: 96px; }
 .logo-card img { max-height: 64px; width: auto; margin: 0 auto; object-fit: contain; }
 .logo-card h3 { font-size: 1.1rem; margin: 0 0 14px; }
 
