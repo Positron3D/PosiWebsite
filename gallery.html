@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gallery | Positron 3D</title>
+  <meta name="description" content="Community builds, printer beauty shots, and project highlights from the Positron 3D community.">
+  <meta property="og:title" content="Gallery | Positron 3D">
+  <meta property="og:description" content="Community builds, printer beauty shots, and project highlights from the Positron 3D community.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="assets/img/logo-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/css/glightbox.min.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav__brand" href="index.html"><img src="assets/img/logo.svg" alt="Positron 3D"></a>
+        <ul class="nav__links">
+          <li><a href="index.html">Home</a></li>
+          <li class="nav__item dropdown"><a href="printers.html" aria-haspopup="true">Our Printers ▾</a><ul class="dropdown__menu"><li><a href="positron.html">Positron</a></li><li><a href="proton.html">Proton</a></li><li><a href="prusawire.html">Prusawire</a></li></ul></li>
+          <li><a href="documentation.html">Documentation</a></li>
+          <li><a href="gallery.html" aria-current="page">Gallery</a></li>
+          <li><a href="https://nomadsgalaxy-shop.fourthwall.com" target="_blank" rel="noopener">Merch</a></li>
+          <li><a href="credits.html">Credits</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav__social">
+          <a href="https://bsky.app/profile/positron3d.com" target="_blank" rel="noopener" aria-label="Bluesky"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5.7 3.3C8.2 5.2 10.9 9 12 11c1.1-2 3.8-5.8 6.3-7.7 1.8-1.4 4.7-2.4 4.7.9 0 .7-.4 5.5-.6 6.3-.7 2.6-3.4 3.3-5.7 2.9 4.1.7 5.1 3 2.9 5.3-4.3 4.4-6.1-1.1-6.6-2.5-.1-.3-.2-.4-.2-.3-.1-.1-.1 0-.2.3-.5 1.4-2.3 6.9-6.6 2.5-2.2-2.3-1.2-4.6 2.9-5.3-2.3.4-5-.3-5.7-2.9C2.7 9.8 2.3 5 2.3 4.2c0-3.3 2.9-2.3 4.7-.9z"/></svg></a>
+          <a href="https://github.com/Positron3D" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7 0-.7 0-.7 1.2 0 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.3v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+        </div>
+        <div class="nav__cta"><a class="btn btn--sm" href="contact.html">About / Contact</a></div>
+        <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="page-hero__bg" style="background-image:url('assets/img/banner.jpg')"></div>
+    <div class="container">
+      <h1>Gallery</h1>
+      <p class="lead center">Community builds, printer beauty shots, and project highlights.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="gallery-filters">
+        <button data-filter="all" class="active">All</button>
+        <button data-filter="community">Community</button>
+        <button data-filter="positron">Positron</button>
+        <button data-filter="proton">Proton</button>
+        <button data-filter="prusawire">Prusawire</button>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/amiiglows.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @amiiglows">
+            <img src="assets/img/gallery/amiiglows.jpg" alt="via @amiiglows" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @amiiglows</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/koosh-fleet2.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @Koosh">
+            <img src="assets/img/gallery/koosh-fleet2.jpg" alt="via @Koosh" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @Koosh</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/koosh-glow.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @Koosh">
+            <img src="assets/img/gallery/koosh-glow.jpg" alt="via @Koosh" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @Koosh</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/Nero3D.png" class="glightbox" data-gallery="gallery" data-glightbox="title: via @Nero3D">
+            <img src="assets/img/gallery/Nero3D.png" alt="via @Nero3D" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @Nero3D</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/Nero3D-2.png" class="glightbox" data-gallery="gallery" data-glightbox="title: via @Nero3D">
+            <img src="assets/img/gallery/Nero3D-2.png" alt="via @Nero3D" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @Nero3D</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/erikbuild1.jpeg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @erikbuild">
+            <img src="assets/img/gallery/erikbuild1.jpeg" alt="via @erikbuild" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @erikbuild</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/erikbuild2.jpeg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @erikbuild">
+            <img src="assets/img/gallery/erikbuild2.jpeg" alt="via @erikbuild" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @erikbuild</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/cyberal.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @cyberal">
+            <img src="assets/img/gallery/cyberal.jpg" alt="via @cyberal" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @cyberal</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/ben1.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via Ben (@gerald.m)">
+            <img src="assets/img/gallery/ben1.jpg" alt="via Ben (@gerald.m)" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via Ben (@gerald.m)</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/mitch1.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @Mitch 3D">
+            <img src="assets/img/gallery/mitch1.jpg" alt="via @Mitch 3D" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @Mitch 3D</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/BrodyM_PW0021.webp" class="glightbox" data-gallery="gallery" data-glightbox="title: via @BrodyM - PW.0021">
+            <img src="assets/img/gallery/BrodyM_PW0021.webp" alt="via @BrodyM - PW.0021" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @BrodyM - PW.0021</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/DocExe_PW0023.jpeg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @DocExe - PW.0023">
+            <img src="assets/img/gallery/DocExe_PW0023.jpeg" alt="via @DocExe - PW.0023" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @DocExe - PW.0023</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/einargjh_PW0012.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @einargjh - PW.0012">
+            <img src="assets/img/gallery/einargjh_PW0012.jpg" alt="via @einargjh - PW.0012" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @einargjh - PW.0012</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/TechJeeper.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @TechJeeper">
+            <img src="assets/img/gallery/TechJeeper.jpg" alt="via @TechJeeper" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @TechJeeper</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/HarshReality.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @HarshReality">
+            <img src="assets/img/gallery/HarshReality.jpg" alt="via @HarshReality" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @HarshReality</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/gallery/IronKnight888.jpeg" class="glightbox" data-gallery="gallery" data-glightbox="title: via @IronKnight888">
+            <img src="assets/img/gallery/IronKnight888.jpeg" alt="via @IronKnight888" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">via @IronKnight888</div>
+        </div>
+        <div class="gallery-item" data-category="positron">
+          <a href="assets/img/printer-positron.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Positron v3.2">
+            <img src="assets/img/printer-positron.jpg" alt="Positron v3.2" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Positron v3.2</div>
+        </div>
+        <div class="gallery-item" data-category="positron">
+          <a href="assets/img/card-printers.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Positron at rest">
+            <img src="assets/img/card-printers.jpg" alt="Positron at rest" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Positron at rest</div>
+        </div>
+        <div class="gallery-item" data-category="positron">
+          <a href="assets/img/hero.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: The Positron">
+            <img src="assets/img/hero.jpg" alt="The Positron" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">The Positron</div>
+        </div>
+        <div class="gallery-item" data-category="positron">
+          <a href="assets/img/community-1.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Building a Positron kit">
+            <img src="assets/img/community-1.jpg" alt="Building a Positron kit" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Building a Positron kit</div>
+        </div>
+        <div class="gallery-item" data-category="positron">
+          <a href="assets/img/about.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Positron detail">
+            <img src="assets/img/about.jpg" alt="Positron detail" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Positron detail</div>
+        </div>
+        <div class="gallery-item" data-category="proton">
+          <a href="assets/img/printer-proton.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Proton">
+            <img src="assets/img/printer-proton.jpg" alt="Proton" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Proton</div>
+        </div>
+        <div class="gallery-item" data-category="proton">
+          <a href="assets/img/proton-1.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Proton close-up">
+            <img src="assets/img/proton-1.jpg" alt="Proton close-up" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Proton close-up</div>
+        </div>
+        <div class="gallery-item" data-category="proton">
+          <a href="assets/img/proton-2.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Proton detail">
+            <img src="assets/img/proton-2.jpg" alt="Proton detail" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Proton detail</div>
+        </div>
+        <div class="gallery-item" data-category="prusawire">
+          <a href="assets/img/printer-prusawire.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Prusawire">
+            <img src="assets/img/printer-prusawire.jpg" alt="Prusawire" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Prusawire</div>
+        </div>
+        <div class="gallery-item" data-category="prusawire">
+          <a href="assets/img/prusawire-1.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Prusawire close-up">
+            <img src="assets/img/prusawire-1.jpg" alt="Prusawire close-up" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Prusawire close-up</div>
+        </div>
+        <div class="gallery-item" data-category="prusawire">
+          <a href="assets/img/prusawire-2.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Prusawire render">
+            <img src="assets/img/prusawire-2.jpg" alt="Prusawire render" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Prusawire render</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/card-discord.jpg" class="glightbox" data-gallery="gallery" data-glightbox="title: Community">
+            <img src="assets/img/card-discord.jpg" alt="Community" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">Community</div>
+        </div>
+        <div class="gallery-item" data-category="community">
+          <a href="assets/img/award.webp" class="glightbox" data-gallery="gallery" data-glightbox="title: 3D Printing Industry Awards nomination">
+            <img src="assets/img/award.webp" alt="3D Printing Industry Awards nomination" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">3D Printing Industry Awards nomination</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand" style="max-width:280px">
+          <img src="assets/img/logo.svg" alt="Positron 3D">
+          <p>Compact, portable, capable. The ultimate open-source portable 3D printer.</p>
+          <p>📍 Philadelphia, PA</p>
+        </div>
+        <div class="footer-col">
+          <h4>Printers</h4>
+          <ul>
+            <li><a href="positron.html">Positron</a></li>
+            <li><a href="proton.html">Proton</a></li>
+            <li><a href="prusawire.html">Prusawire</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="documentation.html">Documentation</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="https://nomadsgalaxy-shop.fourthwall.com" target="_blank" rel="noopener">Merch</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <div class="footer-social">
+            <a href="https://discord.gg/positron" target="_blank" rel="noopener" aria-label="Discord"><svg viewBox="0 -28.5 256 256" width="18" height="18" preserveAspectRatio="xMidYMid"><path fill="currentColor" fill-rule="nonzero" d="M216.856339,16.5966031 C200.285002,8.84328665 182.566144,3.2084988 164.041564,0 C161.766523,4.11318106 159.108624,9.64549908 157.276099,14.0464379 C137.583995,11.0849896 118.072967,11.0849896 98.7430163,14.0464379 C96.9108417,9.64549908 94.1925838,4.11318106 91.8971895,0 C73.3526068,3.2084988 55.6133949,8.86399117 39.0420583,16.6376612 C5.61752293,67.146514 -3.4433191,116.400813 1.08711069,164.955721 C23.2560196,181.510915 44.7403634,191.567697 65.8621325,198.148576 C71.0772151,190.971126 75.7283628,183.341335 79.7352139,175.300261 C72.104019,172.400575 64.7949724,168.822202 57.8887866,164.667963 C59.7209612,163.310589 61.5131304,161.891452 63.2445898,160.431257 C105.36741,180.133187 151.134928,180.133187 192.754523,160.431257 C194.506336,161.891452 196.298154,163.310589 198.110326,164.667963 C191.183787,168.842556 183.854737,172.420929 176.223542,175.320965 C180.230393,183.341335 184.861538,190.991831 190.096624,198.16893 C211.238746,191.588051 232.743023,181.531619 254.911949,164.955721 C260.227747,108.668201 245.831087,59.8662432 216.856339,16.5966031 Z M85.4738752,135.09489 C72.8290281,135.09489 62.4592217,123.290155 62.4592217,108.914901 C62.4592217,94.5396472 72.607595,82.7145587 85.4738752,82.7145587 C98.3405064,82.7145587 108.709962,94.5189427 108.488529,108.914901 C108.508531,123.290155 98.3405064,135.09489 85.4738752,135.09489 Z M170.525237,135.09489 C157.88039,135.09489 147.510584,123.290155 147.510584,108.914901 C147.510584,94.5396472 157.658606,82.7145587 170.525237,82.7145587 C183.391518,82.7145587 193.761324,94.5189427 193.539891,108.914901 C193.539891,123.290155 183.391518,135.09489 170.525237,135.09489 Z"/></svg></a>
+            <a href="https://bsky.app/profile/positron3d.com" target="_blank" rel="noopener" aria-label="Bluesky"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M5.7 3.3C8.2 5.2 10.9 9 12 11c1.1-2 3.8-5.8 6.3-7.7 1.8-1.4 4.7-2.4 4.7.9 0 .7-.4 5.5-.6 6.3-.7 2.6-3.4 3.3-5.7 2.9 4.1.7 5.1 3 2.9 5.3-4.3 4.4-6.1-1.1-6.6-2.5-.1-.3-.2-.4-.2-.3-.1-.1-.1 0-.2.3-.5 1.4-2.3 6.9-6.6 2.5-2.2-2.3-1.2-4.6 2.9-5.3-2.3.4-5-.3-5.7-2.9C2.7 9.8 2.3 5 2.3 4.2c0-3.3 2.9-2.3 4.7-.9z"/></svg></a>
+            <a href="https://github.com/Positron3D" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7 0-.7 0-.7 1.2 0 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17 4.6 18 4.9 18 4.9c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.3v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          </div>
+          <p style="margin-top:16px"><a class="btn btn--sm" href="https://www.paypal.com/donate/?hosted_button_id=P3WHJNXLBCJDA" target="_blank" rel="noopener">♥ Donate</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Positron3D Design Group</span>
+        <span>Open source · Built by the community</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/js/glightbox.min.js"></script>
+  <script>
+  (function() {
+    var lightbox = GLightbox({ selector: ".glightbox" });
+    document.querySelectorAll(".gallery-filters button").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var cat = btn.getAttribute("data-filter");
+        document.querySelectorAll(".gallery-filters button").forEach(function(b) {
+          b.classList.remove("active");
+        });
+        btn.classList.add("active");
+        document.querySelectorAll(".gallery-item").forEach(function(item) {
+          item.hidden = !(cat === "all" || item.getAttribute("data-category") === cat);
+        });
+        lightbox.destroy();
+        lightbox = GLightbox({ selector: ".gallery-item:not([hidden]) .glightbox" });
+      });
+    });
+  })();
+  </script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

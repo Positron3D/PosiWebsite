@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Static site generator for Positron 3D.
 Run from anywhere: python _build/build.py  (writes pages to repo root)."""
-import os, sys
+import os, sys, tomllib
 io = sys.stdout
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -9,6 +9,7 @@ NAV_ITEMS = [
     ("Home", "index.html"),
     ("Our Printers ▾", "printers.html"),  # dropdown handled specially
     ("Documentation", "documentation.html"),
+    ("Gallery", "gallery.html"),
     ("Merch", "https://nomadsgalaxy-shop.fourthwall.com"),
     ("Credits", "credits.html"),
     ("Contact", "contact.html"),
@@ -56,7 +57,8 @@ def header(active):
     </div>
   </header>'''
 
-FOOTER = f'''  <footer class="site-footer">
+def footer(extra_scripts=""):
+    return f'''  <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand" style="max-width:280px">
@@ -76,6 +78,7 @@ FOOTER = f'''  <footer class="site-footer">
           <h4>Explore</h4>
           <ul>
             <li><a href="documentation.html">Documentation</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
             <li><a href="credits.html">Credits</a></li>
             <li><a href="https://nomadsgalaxy-shop.fourthwall.com" target="_blank" rel="noopener">Merch</a></li>
             <li><a href="contact.html">Contact</a></li>
@@ -98,11 +101,11 @@ FOOTER = f'''  <footer class="site-footer">
     </div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+{extra_scripts}  <script src="assets/js/main.js"></script>
 </body>
 </html>'''
 
-def page(active, title, desc, body, hero_img=None):
+def page(active, title, desc, body, extra_head="", extra_scripts=""):
     head = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,11 +121,11 @@ def page(active, title, desc, body, hero_img=None):
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
-</head>
+{extra_head}</head>
 <body>
 
 '''
-    return head + header(active) + "\n\n" + body + "\n\n" + FOOTER + "\n"
+    return head + header(active) + "\n\n" + body + "\n\n" + footer(extra_scripts) + "\n"
 
 def page_hero(title, sub, img):
     return f'''  <section class="page-hero">
@@ -407,7 +410,7 @@ team = [
     ("Koosh", "The Accountant & Proton Designer"),
     ("Birb", "Designer"),
     ("Safe", "Prusawire Shill & Maintainer"),
-    ("Erikbuilds", "Software Dev & Documentation God"),
+    ("ErikBuild", "Software Dev & Documentation God"),
     ("TheNexusAvenger", "Klipper Profiles Maintainer & Software Engineer"),
 ]
 team_cards = "\n        ".join(
@@ -488,5 +491,79 @@ contact_body = page_hero("About &amp; Contact", "Get in touch with the team behi
   </section>'''
 write("contact.html", page("contact", "About & Contact | Positron 3D",
       "About Positron 3D and how to reach us. For business inquiries only — not for printer or sponsorship requests.", contact_body))
+
+# ---------------------------------------------------------------- GALLERY
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "gallery.toml"), "rb") as f:
+    gallery_data = tomllib.load(f)
+
+gallery_items = gallery_data.get("photos", [])
+
+categories = []
+seen = set()
+for item in gallery_items:
+    cat = item.get("category", "")
+    if cat and cat not in seen:
+        seen.add(cat)
+        categories.append(cat)
+
+def _gallery_item_html(item):
+    img = "assets/img/" + item["file"]
+    cap = item["caption"]
+    cat = item.get("category", "")
+    cat_attr = f' data-category="{cat}"' if cat else ""
+    return f'''<div class="gallery-item"{cat_attr}>
+          <a href="{img}" class="glightbox" data-gallery="gallery" data-glightbox="title: {cap}">
+            <img src="{img}" alt="{cap}" loading="lazy">
+          </a>
+          <div class="gallery-item__caption">{cap}</div>
+        </div>'''
+
+gallery_grid_html = "\n        ".join(_gallery_item_html(p) for p in gallery_items)
+
+filter_html = ""
+if categories:
+    btns = ['<button data-filter="all" class="active">All</button>']
+    btns += [f'<button data-filter="{c}">{c.title()}</button>' for c in categories]
+    filter_html = '''      <div class="gallery-filters">
+        %s
+      </div>''' % "\n        ".join(btns)
+
+gallery_body = page_hero("Gallery", "Community builds, printer beauty shots, and project highlights.", "banner.jpg") + f'''
+
+  <section class="section">
+    <div class="container">
+{filter_html}
+      <div class="gallery-grid">
+        {gallery_grid_html}
+      </div>
+    </div>
+  </section>'''
+
+gallery_head = '  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/css/glightbox.min.css">\n'
+gallery_scripts = '''  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.1/dist/js/glightbox.min.js"></script>
+  <script>
+  (function() {
+    var lightbox = GLightbox({ selector: ".glightbox" });
+    document.querySelectorAll(".gallery-filters button").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var cat = btn.getAttribute("data-filter");
+        document.querySelectorAll(".gallery-filters button").forEach(function(b) {
+          b.classList.remove("active");
+        });
+        btn.classList.add("active");
+        document.querySelectorAll(".gallery-item").forEach(function(item) {
+          item.hidden = !(cat === "all" || item.getAttribute("data-category") === cat);
+        });
+        lightbox.destroy();
+        lightbox = GLightbox({ selector: ".gallery-item:not([hidden]) .glightbox" });
+      });
+    });
+  })();
+  </script>
+'''
+
+write("gallery.html", page("gallery", "Gallery | Positron 3D",
+      "Community builds, printer beauty shots, and project highlights from the Positron 3D community.",
+      gallery_body, gallery_head, gallery_scripts))
 
 io.write("Done.\n")

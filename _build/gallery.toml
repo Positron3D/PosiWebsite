@@ -1,0 +1,148 @@
+# Gallery content — add images to assets/img/gallery/ and list them here.
+# Paths are relative to assets/img/.
+# Category is optional; omit it to skip filtering.
+
+[[photos]]
+file = "gallery/amiiglows.jpg"
+caption = "via @amiiglows"
+category = "community"
+
+[[photos]]
+file = "gallery/koosh-fleet2.jpg"
+caption = "via @Koosh"
+category = "community"
+
+[[photos]]
+file = "gallery/koosh-glow.jpg"
+caption = "via @Koosh"
+category = "community"
+
+[[photos]]
+file = "gallery/Nero3D.png"
+caption = "via @Nero3D"
+category = "community"
+
+[[photos]]
+file = "gallery/Nero3D-2.png"
+caption = "via @Nero3D"
+category = "community"
+
+[[photos]]
+file = "gallery/erikbuild1.jpeg"
+caption = "via @erikbuild"
+category = "community"
+
+[[photos]]
+file = "gallery/erikbuild2.jpeg"
+caption = "via @erikbuild"
+category = "community"
+
+[[photos]]
+file = "gallery/cyberal.jpg"
+caption = "via @cyberal"
+category = "community"
+
+[[photos]]
+file = "gallery/ben1.jpg"
+caption = "via Ben (@gerald.m)"
+category = "community"
+
+[[photos]]
+file = "gallery/mitch1.jpg"
+caption = "via @Mitch 3D"
+category = "community"
+
+[[photos]]
+file = "gallery/BrodyM_PW0021.webp"
+caption = "via @BrodyM - PW.0021"
+category = "community"
+
+[[photos]]
+file = "gallery/DocExe_PW0023.jpeg"
+caption = "via @DocExe - PW.0023"
+category = "community"
+
+[[photos]]
+file = "gallery/einargjh_PW0012.jpg"
+caption = "via @einargjh - PW.0012"
+category = "community"
+
+[[photos]]
+file = "gallery/TechJeeper.jpg"
+caption = "via @TechJeeper"
+category = "community"
+
+[[photos]]
+file = "gallery/HarshReality.jpg"
+caption = "via @HarshReality"
+category = "community"
+
+[[photos]]
+file = "gallery/IronKnight888.jpeg"
+caption = "via @IronKnight888"
+category = "community"
+
+[[photos]]
+file = "printer-positron.jpg"
+caption = "Positron v3.2"
+category = "positron"
+
+[[photos]]
+file = "card-printers.jpg"
+caption = "Positron at rest"
+category = "positron"
+
+[[photos]]
+file = "hero.jpg"
+caption = "The Positron"
+category = "positron"
+
+[[photos]]
+file = "community-1.jpg"
+caption = "Building a Positron kit"
+category = "positron"
+
+[[photos]]
+file = "about.jpg"
+caption = "Positron detail"
+category = "positron"
+
+[[photos]]
+file = "printer-proton.jpg"
+caption = "Proton"
+category = "proton"
+
+[[photos]]
+file = "proton-1.jpg"
+caption = "Proton close-up"
+category = "proton"
+
+[[photos]]
+file = "proton-2.jpg"
+caption = "Proton detail"
+category = "proton"
+
+[[photos]]
+file = "printer-prusawire.jpg"
+caption = "Prusawire"
+category = "prusawire"
+
+[[photos]]
+file = "prusawire-1.jpg"
+caption = "Prusawire close-up"
+category = "prusawire"
+
+[[photos]]
+file = "prusawire-2.jpg"
+caption = "Prusawire render"
+category = "prusawire"
+
+[[photos]]
+file = "card-discord.jpg"
+caption = "Community"
+category = "community"
+
+[[photos]]
+file = "award.webp"
+caption = "3D Printing Industry Awards nomination"
+category = "community"
