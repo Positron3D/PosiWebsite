@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers Static Assets — hosts this static site directly on Cloudflare
+  // (replaces GitHub Pages). positron3d.com points at the "posiwebsite" Worker.
+  // No build step. Deploy command = `npx wrangler deploy`.
+  "name": "posiwebsite",
+  "compatibility_date": "2026-06-03",
+  "assets": {
+    "directory": ".",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
