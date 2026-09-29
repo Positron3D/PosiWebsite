@@ -38,7 +38,7 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 **Rules**
 - Accent is for *interaction and emphasis only* — buttons, links, the eyebrow label, one highlighted word in a headline. Never large amber fills of body text.
 - Text on amber is always `--accent-ink` (near-black), never white — contrast + brand consistency.
-- Dark third-party logos get a light chip (`#f4f4f5`, `.logo-card__chip`) so every partner reads equally. Never put a dark logo straight on `--bg`.
+- Partner logos sit in a `.logo-card__chip` that the logo must fill: the chip takes the logo's own background colour (`--chip-bg`), the partner's brand-manual pairing, or the dark default `--surface-2` for a transparent logo prepared to read on dark. Never put a dark logo on a dark chip. Full rule: `AGENTS.md` §4.1.
 - One accent per headline max (e.g. "Compact. **Portable.** Capable.").
 
 ---
@@ -80,7 +80,7 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 - **Nav** (`.nav`): floating rounded-pill bar, translucent dark + blur, sticky. Logo left · links center · social + "About/Contact" CTA right. Active page = filled pill via `aria-current="page"`. Collapses to a hamburger sheet ≤900px; the "Our Printers" dropdown expands inline on mobile.
 - **Cards** (`.card`): surface bg, 16px radius, 16:11 media on top, body with a `.btn--sm` pinned to the bottom. Hover = lift + amber border. Use for any "thing + blurb + link".
 - **Hero** (`.hero`) / **page hero** (`.page-hero`): full-bleed photo, dark gradient scrim, centered eyebrow → h1 → lead → CTAs. Every subpage opens with a `.page-hero`.
-- **Logo grid** (`.logo-card`): partners/retailers — light chip + name + ghost "More Details".
+- **Logo grid** (`.logo-card`): partners. A chip that the logo fills (see §2 and `AGENTS.md` §4) plus the name as `Partner - What They Make`. The whole card is the link, with no button.
 - **Forms:** dark inputs, amber focus border, required marked with amber `*`. Static host → posts to Formspree; never collect payment/credentials.
 
 **Radii:** 999px (pills) · 16px (cards/sections) · 12px (inputs, chips). **Shadow:** one token `--shadow` for all raised elements.
@@ -110,7 +110,8 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 - **`_build/build.py` is the source of truth.** Header, footer, nav, and page content live there; root `*.html` are generated — never hand-edit them.
 - Regenerate: `python _build/build.py` (`PYTHONIOENCODING=utf-8` on Windows).
 - New shared styling goes in `style.css` as a reusable class, not inline. Inline `style=""` is reserved for one-off background-image URLs and tiny spacing nudges.
-- Verify in-browser at 1366px, 412px, and one wide width before shipping.
+- Verify at 1366px, 412px, and one wide width before opening a PR: `python _build/preview.py` screenshots all three (see `AGENTS.md` §3).
+- Changes reach `main` only through a PR approved by @nomadsgalaxy or @erikbuild (`AGENTS.md` §2).
 
 ---
 

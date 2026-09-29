@@ -4,3 +4,13 @@
 .github/**
 wrangler.jsonc
 .assetsignore
+AGENTS.md
+CLAUDE.md
+POSITRON_DESIGN.md
+README.md
+_build
+_build/**
+_preview
+_preview/**
+vault
+vault/**
