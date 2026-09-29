@@ -147,3 +147,4 @@ Then, for every logo:
 - Open a PR for a visual change without running `_build/preview.py` and looking at the result.
 - Commit `_preview/`, credentials, API tokens, or anything from a partner marked confidential.
 - Recolour or distort a partner's logo against its brand manual.
+- Use generative AI for graphic design: logos, partner logos, icons, banners, renders, or product and community photos. AI is fine for the site's code and copy drafts, but not for visuals (Positron Brand Manual §10, AI use).
