@@ -2,6 +2,8 @@
 
 Static site for [Positron 3D](https://positron3d.com), hosted on GitHub Pages.
 
+> **Contributing (people and AI agents):** read [`AGENTS.md`](AGENTS.md) first. Changes go through a PR, are previewed locally with `python _build/preview.py`, and need approval from @nomadsgalaxy or @erikbuild. Project context lives in the Obsidian vault in [`vault/`](vault/Home.md).
+
 ## Quick start
 
 Pages are plain HTML. Edit them directly, or regenerate everything from the build script:

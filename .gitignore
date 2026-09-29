@@ -9,3 +9,11 @@ desktop.ini
 # Python build-script cache
 __pycache__/
 *.pyc
+
+# Local preview screenshots (_build/preview.py)
+_preview/
+
+# Obsidian per-user state
+vault/.obsidian/workspace*.json
+vault/.obsidian/cache
+vault/.trash/
