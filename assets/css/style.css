@@ -193,6 +193,8 @@ p  { margin: 0 0 1rem; color: var(--muted); }
    Styling rule for partner chips: every logo should look like it fills its chip.
    - Logo with its own solid background (LDO, SendCutSend, EIBOS): set that colour
      on the chip with style="--chip-bg:#hex" so the chip and logo read as one tile.
+   - Partner with a brand manual: use its approved logo/background pairing and
+     official assets (Prusa: white logo on Prusa Orange #fd5000, per brand manual 1.0).
    - Transparent logo: prep it to read on the dark default (var(--surface-2)),
      e.g. recolour black text to white (see partner-numakers.webp).
    - Trim empty padding from the image so the mark fills the chip; if it still
