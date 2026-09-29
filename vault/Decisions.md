@@ -9,9 +9,14 @@ tags: [positron, decisions]
 
 Newest first. One entry per styling or process call, with the reason.
 
+## 2026-09-29: Roles, the brand owner and approvers
+
+- **@nomadsgalaxy (TheNomad) is the brand owner.** **@erikbuild** (Erik Reynolds) and **@smiksky** (Scott Mikutsky) are approvers, and any of the three can approve website PRs.
+- Brand rules live in the private `Positron3D/Positron-Brand` repo (brand manual, design system, tokens, logos). Brand-defining changes there need the brand owner.
+
 ## 2026-09-29: PR-only workflow with maintainer approval
 
-- `main` is protected. Changes arrive by PR and need an approving code-owner review from **@nomadsgalaxy** or **@erikbuild** (`.github/CODEOWNERS`).
+- `main` is protected. Changes arrive by PR and need an approving code-owner review from **@nomadsgalaxy**, **@erikbuild** or **@smiksky** (`.github/CODEOWNERS`). @nomadsgalaxy (TheNomad) is also the brand owner.
 - Every PR must be checked locally first with `_build/preview.py` screenshots at desktop, phone and wide widths.
 - **Why:** visual regressions and `build.py`/HTML drift were reaching the live site directly from `main`.
 

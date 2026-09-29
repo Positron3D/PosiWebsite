@@ -3,6 +3,7 @@
 > **Read this before changing anything in this repo.** It applies to every contributor, human or AI agent (Claude Code, Codex, Cursor, Copilot…). `CLAUDE.md` imports this file; other tools read it directly.
 >
 > **Order of authority when rules conflict:**
+> 0. The **Positron 3D Brand Manual and Design System** in the private `Positron3D/Positron-Brand` repo, for the Positron logo, colours, type, voice, naming and licensing. The brand owner is @nomadsgalaxy.
 > 1. A partner's own brand manual, for that partner's logo and colours (see [Partner cards](#4-partner-cards)).
 > 2. [`POSITRON_DESIGN.md`](POSITRON_DESIGN.md), the site's visual system: tokens, type, layout, components.
 > 3. This file, which covers process: how to edit, preview, open PRs and ship.
@@ -52,7 +53,7 @@ branch → edit build.py (+ css/img) → rebuild → local preview → PR → ap
    - **Parity check.** Run `python _build/build.py && git status`. If the rebuild changes anything you didn't intend, `build.py` and the HTML have drifted. Fix `build.py`; don't commit hand edits to the HTML. (In May 2026 a sponsor update edited only `index.html`, and the next rebuild would have silently reverted it.)
 3. **Preview locally** (§3) and check every page you touched at all three widths.
 4. **Open a PR** using the template. Describe what changed and why, and **attach the preview screenshots** for visual changes.
-5. **Approval.** Only **@nomadsgalaxy** or **@erikbuild** can approve (`.github/CODEOWNERS` + branch protection). Other collaborators may review and comment, but their approval doesn't satisfy the rule. Authors can't approve their own PR.
+5. **Approval.** Only **@nomadsgalaxy**, **@erikbuild** or **@smiksky** can approve (`.github/CODEOWNERS` + branch protection). Other collaborators may review and comment, but their approval doesn't satisfy the rule. Authors can't approve their own PR.
 6. **Merge** once approved. Merging to `main` deploys within about a minute. Afterwards, spot-check the live site in a real browser: Cloudflare's bot check ("Just a moment…") blocks `curl`, so command-line fetches of HTML pages don't show the real site. Static assets (images/CSS) fetch normally.
 
 **Commit identity.** Commit under the GitHub account you'll open the PR with, using that account's name and a verified or noreply email. Don't use an employer or work identity for Positron commits. Set it per-repo: `git config user.name "…"` and `git config user.email "…"`. The maintainers commit as `The Nomad <nomad@positron3d.com>` (@nomadsgalaxy) and `Erik Reynolds <me@erik.build>` (@erikbuild).
@@ -141,7 +142,7 @@ Then, for every logo:
 
 ## 7. Never
 
-- Push to `main`, force-push shared branches, or merge without an approval from @nomadsgalaxy or @erikbuild.
+- Push to `main`, force-push shared branches, or merge without an approval from @nomadsgalaxy, @erikbuild or @smiksky.
 - Hand-edit a generated `*.html` without the same change in `build.py`.
 - Open a PR for a visual change without running `_build/preview.py` and looking at the result.
 - Commit `_preview/`, credentials, API tokens, or anything from a partner marked confidential.

@@ -11,7 +11,7 @@ Project knowledge for the **positron3d.com** site (this repo). Rules for making 
 
 ## Notes
 
-- [[Workflow]]: branch → build → local preview → PR → approval by @nomadsgalaxy or @erikbuild → auto-deploy.
+- [[Workflow]]: branch → build → local preview → PR → approval by @nomadsgalaxy, @erikbuild or @smiksky → auto-deploy.
 - [[Deploy]]: Cloudflare Worker `posiwebsite`, GitHub Pages, and checking the live site.
 - [[Build System]]: `_build/build.py` is the source of truth, plus the parity check.
 - [[Partners]]: every partner card with its link, affiliate code, chip colour and logo source.
