@@ -189,7 +189,14 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
 .split img { border-radius: var(--radius); box-shadow: var(--shadow); }
 
-/* partners / logos */
+/* partners / logos
+   Styling rule for partner chips: every logo should look like it fills its chip.
+   - Logo with its own solid background (LDO, SendCutSend, EIBOS): set that colour
+     on the chip with style="--chip-bg:#hex" so the chip and logo read as one tile.
+   - Transparent logo: prep it to read on the dark default (var(--surface-2)),
+     e.g. recolour black text to white (see partner-numakers.webp).
+   - Trim empty padding from the image so the mark fills the chip; if it still
+     looks small, shrink that chip's padding inline (e.g. padding:16px 8px). */
 .logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
 .logo-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);

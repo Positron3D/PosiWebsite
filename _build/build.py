@@ -159,9 +159,10 @@ home_body = '''  <section class="hero">
     <div class="container">
       <h2 class="center">Official Project Partners</h2>
       <p class="lead center" style="margin-bottom:46px">The makers and manufacturers who help bring Positron to life.</p>
+      <!-- Partner chips: match each chip to its logo (--chip-bg) and trim logo padding. See the "partners / logos" note in assets/css/style.css. -->
       <div class="logos">
         <a class="logo-card" href="https://ldomotion.com" target="_blank" rel="noopener"><div class="logo-card__chip" style="--chip-bg:#35669a;padding:16px 8px"><img src="assets/img/partner-ldo.webp" alt="LDO Motors"></div><h3>LDO Motors</h3></a>
-        <a class="logo-card" href="https://sendcutsend.com" target="_blank" rel="noopener"><div class="logo-card__chip"><img src="assets/img/partner-sendcutsend.png" alt="SendCutSend"></div><h3>SendCutSend</h3></a>
+        <a class="logo-card" href="https://sendcutsend.com" target="_blank" rel="noopener"><div class="logo-card__chip" style="--chip-bg:#cc2127;padding:8px"><img src="assets/img/partner-sendcutsend.png" alt="SendCutSend"></div><h3>SendCutSend</h3></a>
         <a class="logo-card" href="https://siraya.tech/?sca_ref=10844692.cJs7XSw1FJ" target="_blank" rel="noopener"><div class="logo-card__chip"><img src="assets/img/partner-siraya.png" alt="Siraya Tech"></div><h3>Siraya Tech - Filaments and Resins</h3></a>
         <a class="logo-card" href="https://www.prusa3d.com/#a_aid=nomad&a_bid=11110002" target="_blank" rel="noopener"><div class="logo-card__chip"><img src="assets/img/partner-prusa.png" alt="Prusa Research"></div><h3>Prusa Research</h3></a>
         <a class="logo-card" href="https://shop.eibos3d.com/" target="_blank" rel="noopener"><div class="logo-card__chip" style="--chip-bg:#fff"><img src="assets/img/partner-eibos.webp" alt="Eibos 3D"></div><h3>EIBOS3D - Filament Dryers</h3></a>
