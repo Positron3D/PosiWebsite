@@ -16,4 +16,4 @@
 <!-- Drag in the relevant _preview/*.png files. -->
 
 ---
-Approval required from @nomadsgalaxy or @erikbuild before merge.
+Approval required from @nomadsgalaxy, @erikbuild or @smiksky before merge.

@@ -111,7 +111,7 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 - Regenerate: `python _build/build.py` (`PYTHONIOENCODING=utf-8` on Windows).
 - New shared styling goes in `style.css` as a reusable class, not inline. Inline `style=""` is reserved for one-off background-image URLs and tiny spacing nudges.
 - Verify at 1366px, 412px, and one wide width before opening a PR: `python _build/preview.py` screenshots all three (see `AGENTS.md` §3).
-- Changes reach `main` only through a PR approved by @nomadsgalaxy or @erikbuild (`AGENTS.md` §2).
+- Changes reach `main` only through a PR approved by @nomadsgalaxy, @erikbuild or @smiksky (`AGENTS.md` §2).
 
 ---
 
