@@ -80,7 +80,7 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 - **Nav** (`.nav`): floating rounded-pill bar, translucent dark + blur, sticky. Logo left · links center · social + "About/Contact" CTA right. Active page = filled pill via `aria-current="page"`. Collapses to a hamburger sheet ≤900px; the "Our Printers" dropdown expands inline on mobile.
 - **Cards** (`.card`): surface bg, 16px radius, 16:11 media on top, body with a `.btn--sm` pinned to the bottom. Hover = lift + amber border. Use for any "thing + blurb + link".
 - **Hero** (`.hero`) / **page hero** (`.page-hero`): full-bleed photo, dark gradient scrim, centered eyebrow → h1 → lead → CTAs. Every subpage opens with a `.page-hero`.
-- **Logo grid** (`.logo-card`): partners. A chip that the logo fills (see §2 and `AGENTS.md` §4) plus the name as `Partner - What They Make`. The whole card is the link, with no button.
+- **Logo grid** (`.logo-card`): partners. A chip that the logo fills (see §2 and `AGENTS.md` §4) plus the name as `Partner - What They Make`. The whole card is the link, with no button. `.logos` is a wrapping, centred flex row: 4 per row on desktop and 2 on tablets and phones (compact cards on phones). An incomplete last row is centred under the rows above. Set the count with `--cols`; don't hand-roll widths.
 - **Forms:** dark inputs, amber focus border, required marked with amber `*`. Static host → posts to Formspree; never collect payment/credentials.
 
 **Radii:** 999px (pills) · 16px (cards/sections) · 12px (inputs, chips). **Shadow:** one token `--shadow` for all raised elements.
