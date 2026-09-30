@@ -167,6 +167,7 @@ home_body = '''  <section class="hero">
         <a class="logo-card" href="https://www.prusa3d.com/#a_aid=nomad&a_bid=11110002" target="_blank" rel="noopener"><div class="logo-card__chip" style="--chip-bg:#fd5000"><img src="assets/img/partner-prusa.png" alt="Prusa Research"></div><h3>Prusa Research</h3></a>
         <a class="logo-card" href="https://shop.eibos3d.com/" target="_blank" rel="noopener"><div class="logo-card__chip" style="--chip-bg:#fff"><img src="assets/img/partner-eibos.webp" alt="Eibos 3D"></div><h3>EIBOS3D - Filament Dryers</h3></a>
         <a class="logo-card" href="https://numakers.com" target="_blank" rel="noopener"><div class="logo-card__chip"><img src="assets/img/partner-numakers.webp" alt="Numakers"></div><h3>Numakers - Filaments</h3></a>
+        <a class="logo-card" href="https://kb-3d.com/store/affiliatepage/2143-kb3d-x-nomad.html?affp=22155" target="_blank" rel="noopener"><div class="logo-card__chip"><img src="assets/img/partner-kb3d.svg" alt="KB3D"></div><h3>KB3D - Positron Kits and Posi-Wrap</h3></a>
       </div>
     </div>
   </section>

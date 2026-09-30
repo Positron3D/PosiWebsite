@@ -199,7 +199,10 @@ p  { margin: 0 0 1rem; color: var(--muted); }
      e.g. recolour black text to white (see partner-numakers.webp).
    - Trim empty padding from the image so the mark fills the chip; if it still
      looks small, shrink that chip's padding inline (e.g. padding:16px 8px). */
-.logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+/* Partner grid: wrapping flex row so an incomplete last row is centred under the full rows.
+   Card width comes from --cols (4 desktop, 2 tablet, 1 phone); cards in a row share one height. */
+.logos { --cols: 4; --gap: 22px; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gap); }
+.logos > .logo-card { flex: 0 1 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0; }
 .logo-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 30px 20px; text-align: center; transition: border-color .2s ease, transform .2s ease;
@@ -324,7 +327,7 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .grid--3, .grid--4 { grid-template-columns: repeat(2, 1fr); }
-  .logos { grid-template-columns: repeat(2, 1fr); }
+  .logos { --cols: 2; }
   .split { grid-template-columns: 1fr; gap: 28px; }
   .split--rev .split__text { order: 2; }
 
@@ -341,7 +344,13 @@ p  { margin: 0 0 1rem; color: var(--muted); }
   .nav__cta .btn { padding: .55em 1.1em; }
 }
 @media (max-width: 560px) {
-  .grid--3, .grid--4, .logos, .form-grid { grid-template-columns: 1fr; }
+  .grid--3, .grid--4, .form-grid { grid-template-columns: 1fr; }
+  /* Phones: two compact cards per row (an odd last card centres); tighter chips so wordmarks stay legible. */
+  .logos { --cols: 2; --gap: 12px; }
+  .logo-card { padding: 14px 10px 16px; }
+  .logo-card__chip { height: 76px; padding: 10px 8px; margin-bottom: 10px; }
+  .logo-card img { max-height: 54px; }
+  .logo-card h3 { font-size: .92rem; line-height: 1.25; margin: 0; }
   .section { padding: 60px 0; }
   .hero { min-height: 80vh; }
   .nav__cta { display: none; }
