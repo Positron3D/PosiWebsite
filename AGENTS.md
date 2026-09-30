@@ -3,7 +3,7 @@
 > **Read this before changing anything in this repo.** It applies to every contributor, human or AI agent (Claude Code, Codex, Cursor, Copilot…). `CLAUDE.md` imports this file; other tools read it directly.
 >
 > **Order of authority when rules conflict:**
-> 0. The **Positron 3D Brand Manual and Design System** in the private `Positron3D/Positron-Brand` repo, for the Positron logo, colours, type, voice, naming and licensing. The brand owner is @nomadsgalaxy.
+> 0. The **Positron 3D Brand Manual and Design System** in the private `Positron3D/Positron-Brand` repo, for the Positron logo, colours, type, voice, naming and licensing. The brand owner is @nomadsgalaxy. How AI agents work on the team (roles, workflow, verification, AI use) is in the same repo's `AI_TEAM_GUIDE.md`.
 > 1. A partner's own brand manual, for that partner's logo and colours (see [Partner cards](#4-partner-cards)).
 > 2. [`POSITRON_DESIGN.md`](POSITRON_DESIGN.md), the site's visual system: tokens, type, layout, components.
 > 3. This file, which covers process: how to edit, preview, open PRs and ship.
