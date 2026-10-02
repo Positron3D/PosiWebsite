@@ -29,9 +29,11 @@ jobs:
         run: python assets/py/blogmd.py && python _build/blogzip.py
       - name: Build
         run: python _build/build.py
+      - name: Check the RSS feed is well-formed XML
+        run: python -c "import xml.etree.ElementTree as ET; ET.parse('feed.xml')"
       - name: Commit regenerated pages and unpacked posts
         run: |
-          git add -A -- '*.html' Blog
+          git add -A -- '*.html' feed.xml Blog
           if git diff --cached --quiet; then echo "Pages already up to date."; exit 0; fi
           if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
             echo "::error::Pages are out of date. PRs from forks can't be rebuilt automatically: run 'python _build/build.py' and push the result."
