@@ -1,6 +1,6 @@
 # Writing for the Positron blog
 
-Every post here becomes a page on [positron3d.com/blog](https://positron3d.com/blog.html). A post is either:
+Every post here becomes a page on [positron3d.com/blog](https://positron3d.com/blog.html) and an item in the RSS feed, [positron3d.com/feed.xml](https://positron3d.com/feed.xml). A post is either:
 
 - **`YYYY-MM-DD-short-title.md`**, a text-only post, or
 - **a folder `YYYY-MM-DD-short-title/`** holding the post's `.md` plus all of its images, including the cover thumbnail. Every post with images lives in its own folder.

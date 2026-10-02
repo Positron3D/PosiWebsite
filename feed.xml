@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Positron 3D Blog</title>
+    <link>https://positron3d.com/blog.html</link>
+    <description>News, build logs and deep dives from the Positron Team.</description>
+    <language>en</language>
+    <lastBuildDate>Thu, 01 Jan 2026 12:00:00 +0000</lastBuildDate>
+    <atom:link href="https://positron3d.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://positron3d.com/assets/img/logo-icon.png</url>
+      <title>Positron 3D Blog</title>
+      <link>https://positron3d.com/blog.html</link>
+    </image>
+
+  </channel>
+</rss>

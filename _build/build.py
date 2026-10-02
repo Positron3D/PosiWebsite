@@ -635,9 +635,13 @@ def _byline(p):
     return (f'<p class="post-meta"><time datetime="{p["date"]}">{p["date_obj"]:%B} {p["date_obj"].day}, {p["date_obj"].year}</time>'
             f' · {_esc(p["author"])} · {p["minutes"]} min read</p><p class="post-tags">{draft}{tags}</p>')
 
+SITE = "https://positron3d.com/"
+FEED_LINK = '  <link rel="alternate" type="application/rss+xml" title="Positron 3D Blog" href="feed.xml">\n'
+
 for p in posts:
     cover = f'<img class="post-cover" src="{_esc(p["cover"])}" alt="">' if p.get("cover") else ""
     og = f'  <meta property="og:image" content="https://positron3d.com/{_esc(p["cover"])}">\n' if p.get("cover") else ""
+    og += FEED_LINK
     body = f'''  <article class="section post">
     <div class="container prose">
       <p class="eyebrow"><a href="blog.html">← Blog</a></p>
@@ -668,10 +672,64 @@ blog_body = page_hero("Blog", "News, build logs and deep dives from the Positron
       <div class="post-list">
 {cards}
       </div>
-      <p class="center" style="margin-top:40px"><a href="blog-editor.html">Positron Team: write a post →</a></p>
+      <p class="center blog-links"><a href="feed.xml">RSS feed</a> · <a href="blog-editor.html">Positron Team: write a post →</a></p>
     </div>
   </section>'''
-write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body))
+write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body, FEED_LINK))
+
+# RSS 2.0 feed of published posts (never drafts), with full content and absolute links for feed readers.
+from email.utils import format_datetime
+import datetime as _dt
+from urllib.parse import urljoin
+def _abs_url(u, base=SITE):
+    """Resolve a URL as the browser does on the post page (feed readers need absolute, normalised links)."""
+    return urljoin(base, u)
+def _absolute(html_text, base):
+    return re.sub(r'\b(src|href)="([^"]+)"', lambda m: '%s="%s"' % (m.group(1), _html.escape(_abs_url(_html.unescape(m.group(2)), base))), html_text)
+def _cdata(text):
+    return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
+def _rfc822(d):
+    return format_datetime(_dt.datetime(d.year, d.month, d.day, 12, tzinfo=_dt.timezone.utc))
+feed_items = []
+for p in [p for p in posts if not p["draft"]][:30]:
+    url = SITE + "blog-%s.html" % p["slug"]
+    cover = f'<img src="{_esc(p["cover"])}" alt="">' if p.get("cover") else ""
+    tags = "".join(f"\n      <category>{_esc(t)}</category>" for t in p["tags"])
+    enclosure = ""
+    if p.get("cover"):
+        cpath = os.path.normpath(os.path.join(ROOT, p["cover"]))
+        ctype = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".gif": "image/gif", ".avif": "image/avif"}.get(os.path.splitext(cpath)[1].lower())
+        if ctype and os.path.isfile(cpath):
+            enclosure = f'\n      <enclosure url="{_esc(_abs_url(p["cover"]))}" length="{os.path.getsize(cpath)}" type="{ctype}"/>'
+    feed_items.append(f'''    <item>
+      <title>{_esc(p["title"])}</title>
+      <link>{url}</link>
+      <guid isPermaLink="true">{url}</guid>
+      <pubDate>{_rfc822(p["date_obj"])}</pubDate>
+      <dc:creator>{_esc(p["author"])}</dc:creator>
+      <description>{_esc(p.get("summary", p["title"]))}</description>{tags}{enclosure}
+      <content:encoded>{_cdata(_absolute(cover + p["body"], url))}</content:encoded>
+    </item>''')
+latest = max([p["date_obj"] for p in posts if not p["draft"]], default=_dt.date(2026, 1, 1))
+feed = f'''<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Positron 3D Blog</title>
+    <link>{SITE}blog.html</link>
+    <description>News, build logs and deep dives from the Positron Team.</description>
+    <language>en</language>
+    <lastBuildDate>{_rfc822(latest)}</lastBuildDate>
+    <atom:link href="{SITE}feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>{SITE}assets/img/logo-icon.png</url>
+      <title>Positron 3D Blog</title>
+      <link>{SITE}blog.html</link>
+    </image>
+{chr(10).join(feed_items)}
+  </channel>
+</rss>
+'''
+write("feed.xml", feed)
 
 
 # Editor toolbar icons: Lucide 1.48.0 (ISC licence, lucide.dev), vendored so the page needs no icon font.
