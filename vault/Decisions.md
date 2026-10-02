@@ -9,6 +9,12 @@ tags: [positron, decisions]
 
 Newest first. One entry per styling or process call, with the reason.
 
+## 2026-10-01: Blog built from a `Blog/` folder
+
+- Posts are Markdown files in `Blog/`, rendered at build time by `assets/py/blogmd.py` (Python-Markdown and pymdown-extensions, the site's first Python dependencies). The drafting app runs the same file in the browser through Pyodide.
+- A PR workflow rebuilds the pages, because `main` is protected and most authors will upload through GitHub's web UI.
+- **Why:** the team asked for a blog with full formatting (text wrap around images and more) that people can write without touching the site code. One renderer means the editor preview can't drift from the published page.
+
 ## 2026-09-29: Roles, the brand owner and approvers
 
 - **@nomadsgalaxy (TheNomad) is the brand owner.** **@erikbuild** (Erik Reynolds) and **@smiksky** (Scott Mikutsky) are approvers, and any of the three can approve website PRs.

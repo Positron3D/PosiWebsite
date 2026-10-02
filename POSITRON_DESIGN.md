@@ -77,11 +77,13 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 ## 6. Components
 
 - **Buttons** (`.btn`): pill (`border-radius: 999px`), amber fill, `--accent-ink` text, lift + glow on hover. `.btn--ghost` = transparent + border for secondary actions (max one primary + one ghost per group). `.btn--sm` inside cards.
-- **Nav** (`.nav`): floating rounded-pill bar, translucent dark + blur, sticky. Logo left · links center · social + "About/Contact" CTA right. Active page = filled pill via `aria-current="page"`. Collapses to a hamburger sheet ≤900px; the "Our Printers" dropdown expands inline on mobile.
+- **Nav** (`.nav`): floating rounded-pill bar, translucent dark + blur, sticky. Logo left · links center · social + "About/Contact" CTA right. Active page = filled pill via `aria-current="page"`. Collapses to a hamburger sheet ≤1200px (eight links plus social and CTA need the room; nav labels never wrap); the "Our Printers" dropdown expands inline on mobile.
 - **Cards** (`.card`): surface bg, 16px radius, 16:11 media on top, body with a `.btn--sm` pinned to the bottom. Hover = lift + amber border. Use for any "thing + blurb + link".
 - **Hero** (`.hero`) / **page hero** (`.page-hero`): full-bleed photo, dark gradient scrim, centered eyebrow → h1 → lead → CTAs. Every subpage opens with a `.page-hero`.
 - **Logo grid** (`.logo-card`): partners. A chip that the logo fills (see §2 and `AGENTS.md` §4) plus the name as `Partner - What They Make`. The whole card is the link, with no button. `.logos` is a wrapping, centred flex row: 4 per row on desktop and 2 on tablets and phones (compact cards on phones). An incomplete last row is centred under the rows above. Set the count with `--cols`; don't hand-roll widths.
 - **Forms:** dark inputs, amber focus border, required marked with amber `*`. Static host → posts to Formspree; never collect payment/credentials.
+
+- **Blog** (`blog.html`, `blog-<slug>.html`): the index uses the same centred flex row as the partner grid (`.post-list`: 3, 2 and 1 per row on desktop, tablet and phone). Posts are a 760px `.prose` column. Floated images (`{.left}` / `{.right}`) stack above the text under 560px. Callouts, tabs, code and tables use the surface tokens, with semantic colours only for tip, warning and danger callouts.
 
 **Radii:** 999px (pills) · 16px (cards/sections) · 12px (inputs, chips). **Shadow:** one token `--shadow` for all raised elements.
 
@@ -101,7 +103,7 @@ Do **not** recolor or add effects to the logo. It is single-color amber; place i
 - Maintain AA contrast: `--text`/`--muted` on `--bg`, `--accent-ink` on amber. Don't put amber text on dark for anything small.
 - Touch targets ≥ 40px (nav social/CTA already sized for this).
 - Every image has meaningful `alt`; nav landmarks and `aria-current` are set in the generator.
-- Breakpoints: **900px** (grids → 2-up, nav → hamburger) and **560px** (grids → 1-up, tighter sections). Test both plus a wide desktop on any new page.
+- Breakpoints: **1200px** (nav → hamburger), **900px** (grids → 2-up) and **560px** (grids → 1-up, tighter sections). Test both plus a wide desktop on any new page.
 
 ---
 

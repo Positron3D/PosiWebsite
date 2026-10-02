@@ -4,6 +4,10 @@ Static site for [Positron 3D](https://positron3d.com), hosted on GitHub Pages.
 
 > **Contributing (people and AI agents):** read [`AGENTS.md`](AGENTS.md) first. Changes go through a PR, are previewed locally with `python _build/preview.py`, and need approval from @nomadsgalaxy, @erikbuild or @smiksky. Project context lives in the Obsidian vault in [`vault/`](vault/Home.md).
 
+## Blog
+
+Team members write posts in [`Blog/`](Blog/README.md), either directly as Markdown or with the drafting app at `/blog-editor.html`. A workflow rebuilds the pages on the PR. To build locally: `pip install -r _build/requirements.txt`, then `python _build/build.py`.
+
 ## Quick start
 
 Pages are plain HTML. Edit them directly, or regenerate everything from the build script:

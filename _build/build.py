@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Static site generator for Positron 3D.
 Run from anywhere: python _build/build.py  (writes pages to repo root)."""
-import os, sys, tomllib
+import os, re, sys, tomllib
 io = sys.stdout
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,6 +10,7 @@ NAV_ITEMS = [
     ("Our Printers ▾", "printers.html"),  # dropdown handled specially
     ("Documentation", "documentation.html"),
     ("Gallery", "gallery.html"),
+    ("Blog", "blog.html"),
     ("Merch", "https://nomadsgalaxy-shop.fourthwall.com"),
     ("Credits", "credits.html"),
     ("Contact", "contact.html"),
@@ -79,6 +80,7 @@ def footer(extra_scripts=""):
           <ul>
             <li><a href="documentation.html">Documentation</a></li>
             <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="blog.html">Blog</a></li>
             <li><a href="credits.html">Credits</a></li>
             <li><a href="https://nomadsgalaxy-shop.fourthwall.com" target="_blank" rel="noopener">Merch</a></li>
             <li><a href="contact.html">Contact</a></li>
@@ -570,5 +572,130 @@ gallery_scripts = '''  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.1
 write("gallery.html", page("gallery", "Gallery | Positron 3D",
       "Community builds, printer beauty shots, and project highlights from the Positron 3D community.",
       gallery_body, gallery_head, gallery_scripts))
+
+# ---------------------------------------------------------------- BLOG
+# Posts are Blog/*.md (front matter + markdown), rendered by assets/py/blogmd.py.
+# Output: blog.html (index) + blog-<slug>.html per post. `--drafts` also builds draft: true posts.
+import glob, html as _html
+sys.path.insert(0, os.path.join(ROOT, "assets", "py"))
+try:
+    import blogmd
+except ImportError:
+    sys.exit("The blog needs Python-Markdown: pip install -r _build/requirements.txt")
+
+def _esc(s): return _html.escape(s, quote=True)
+
+posts = []
+for path in sorted(glob.glob(os.path.join(ROOT, "Blog", "*.md"))):
+    name = os.path.basename(path)
+    if name.startswith("_") or name.upper() == "README.MD":
+        continue
+    with open(path, encoding="utf-8") as f:
+        try:
+            meta, body_html = blogmd.render(f.read())
+        except blogmd.PostError as e:
+            sys.exit("Blog/%s: %s" % (name, e))
+    if meta["draft"] and "--drafts" not in sys.argv:
+        continue
+    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", name[:-3]).lower()
+    if not re.fullmatch(r"[a-z0-9-]+", slug):
+        sys.exit("Blog/%s: file names may only use a-z, 0-9 and dashes" % name)
+    if any(p["slug"] == slug for p in posts):
+        sys.exit("Blog/%s: another post already uses the slug %r" % (name, slug))
+    posts.append(dict(meta, slug=slug, body=body_html))
+posts.sort(key=lambda p: p["date_obj"], reverse=True)
+
+def _byline(p):
+    tags = "".join(f'<span class="tag">{_esc(t)}</span>' for t in p["tags"])
+    draft = '<span class="tag tag--draft">Draft</span>' if p["draft"] else ""
+    return (f'<p class="post-meta"><time datetime="{p["date"]}">{p["date_obj"]:%B} {p["date_obj"].day}, {p["date_obj"].year}</time>'
+            f' · {_esc(p["author"])} · {p["minutes"]} min read</p><p class="post-tags">{draft}{tags}</p>')
+
+for p in posts:
+    cover = f'<img class="post-cover" src="{_esc(p["cover"])}" alt="">' if p.get("cover") else ""
+    og = f'  <meta property="og:image" content="https://positron3d.com/{_esc(p["cover"])}">\n' if p.get("cover") else ""
+    body = f'''  <article class="section post">
+    <div class="container prose">
+      <p class="eyebrow"><a href="blog.html">← Blog</a></p>
+      <h1>{_esc(p["title"])}</h1>
+      {_byline(p)}
+      {cover}
+      <div class="post-body">
+{p["body"]}
+      </div>
+    </div>
+  </article>'''
+    write("blog-%s.html" % p["slug"], page("blog", "%s | Positron 3D" % _esc(p["title"]),
+          _esc(p.get("summary", p["title"])), body, og))
+
+cards = "\n".join(f'''        <article class="card">
+          {f'<a class="card__media" href="blog-{p["slug"]}.html"><img src="{_esc(p["cover"])}" alt="" loading="lazy"></a>' if p.get("cover") else ""}
+          <div class="card__body">
+            <h3><a href="blog-{p["slug"]}.html">{_esc(p["title"])}</a></h3>
+            {_byline(p)}
+            <p>{_esc(p.get("summary", ""))}</p>
+            <a class="btn btn--sm" href="blog-{p["slug"]}.html">Read post</a>
+          </div>
+        </article>''' for p in posts) or '        <p class="lead center">No posts yet. Check back soon.</p>'
+blog_body = page_hero("Blog", "News, build logs and deep dives from the Positron Team.", "banner.jpg") + f'''
+
+  <section class="section">
+    <div class="container">
+      <div class="post-list">
+{cards}
+      </div>
+      <p class="center" style="margin-top:40px"><a href="blog-editor.html">Positron Team: write a post →</a></p>
+    </div>
+  </section>'''
+write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body))
+
+
+editor_body = '''  <section class="section section--tight editor">
+    <div class="container">
+      <p class="eyebrow">Positron Team</p>
+      <h1>Blog editor</h1>
+      <p class="lead">Write a post with a live preview that matches the site. Save the <code>.md</code>, then upload it and its images to the <code>Blog/</code> folder on GitHub. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
+      <div class="editor__actions">
+        <button type="button" class="btn btn--sm btn--ghost" id="ed-new">New</button>
+        <label class="btn btn--sm btn--ghost">Open .md<input type="file" id="ed-open" accept=".md,text/markdown" hidden></label>
+        <button type="button" class="btn btn--sm" id="ed-save">Save .md</button>
+        <a class="btn btn--sm btn--ghost" id="ed-upload" target="_blank" rel="noopener">Upload to GitHub</a>
+        <span class="editor__file" id="ed-filename"></span>
+        <span class="editor__status" id="ed-status" role="status"></span>
+      </div>
+      <div class="editor__grid">
+        <div class="editor__pane">
+          <div class="editor__fields">
+            <label>Title<input id="ed-title" required></label>
+            <label>Date<input id="ed-date" type="date" required></label>
+            <label>Author<input id="ed-author" required></label>
+            <label>Tags<input id="ed-tags" placeholder="positron, build log"></label>
+            <label class="editor__wide">Summary<input id="ed-summary" placeholder="One sentence for the blog page and link previews"></label>
+            <label>Cover image<input id="ed-cover" placeholder="cover.jpg"></label>
+            <label class="editor__check"><input type="checkbox" id="ed-draft"> Draft (not published)</label>
+          </div>
+          <div class="editor__toolbar" role="toolbar" aria-label="Formatting">
+            <button type="button" data-snippet="h2" title="Heading">H2</button> <button type="button" data-snippet="h3" title="Subheading">H3</button> <button type="button" data-snippet="bold" title="Bold"><b>B</b></button> <button type="button" data-snippet="italic" title="Italic"><i>I</i></button> <button type="button" data-snippet="strike" title="Strikethrough"><s>S</s></button> <button type="button" data-snippet="mark" title="Highlight">Mark</button> <button type="button" data-snippet="link" title="Link">Link</button> <button type="button" data-snippet="code" title="Inline code">&lt;/&gt;</button> <button type="button" data-snippet="quote" title="Blockquote">Quote</button> <button type="button" data-snippet="ul" title="Bulleted list">• List</button> <button type="button" data-snippet="ol" title="Numbered list">1. List</button> <button type="button" data-snippet="task" title="Task list">☑ Tasks</button> <button type="button" data-snippet="table" title="Table">Table</button> <button type="button" data-snippet="note" title="Note callout">Note</button> <button type="button" data-snippet="tip" title="Tip callout">Tip</button> <button type="button" data-snippet="warning" title="Warning callout">Warning</button> <button type="button" data-snippet="details" title="Collapsible section">Collapse</button> <button type="button" data-snippet="tabs" title="Tabbed content">Tabs</button> <button type="button" data-snippet="fence" title="Code block">Code block</button> <button type="button" data-snippet="video" title="YouTube embed">Video</button> <button type="button" data-snippet="toc" title="Table of contents">TOC</button> <button type="button" data-snippet="hr" title="Divider">―</button>
+            <span class="editor__img">
+              <select id="ed-align" aria-label="Image placement"><option value="right">Image right, text wraps</option><option value="left">Image left, text wraps</option><option value="center">Image centred</option><option value="full">Image full width</option><option value="wide">Image extra wide</option></select>
+              <label class="btn btn--sm">Add images<input type="file" id="ed-images" accept="image/*" multiple hidden></label>
+            </span>
+          </div>
+          <textarea id="ed-body" spellcheck="true" aria-label="Post text (Markdown)"></textarea>
+          <p class="editor__note" id="ed-image-list"></p>
+        </div>
+        <article class="editor__preview post prose" id="ed-preview" aria-label="Preview"></article>
+      </div>
+    </div>
+  </section>'''
+write("blog-editor.html", page("blog", "Blog editor | Positron 3D", "Draft a Positron 3D blog post.", editor_body,
+      '  <meta name="robots" content="noindex">\n', '  <script src="assets/js/blog-editor.js"></script>\n'))
+
+# Remove pages of posts that were deleted, renamed or turned back into drafts.
+built = {"blog-%s.html" % p["slug"] for p in posts} | {"blog-editor.html"}
+for old in glob.glob(os.path.join(ROOT, "blog-*.html")):
+    if os.path.basename(old) not in built:
+        os.remove(old)
+        io.write("removed %s\n" % os.path.basename(old))
 
 io.write("Done.\n")

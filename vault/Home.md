@@ -15,6 +15,7 @@ Project knowledge for the **positron3d.com** site (this repo). Rules for making 
 - [[Deploy]]: Cloudflare Worker `posiwebsite`, GitHub Pages, and checking the live site.
 - [[Build System]]: `_build/build.py` is the source of truth, plus the parity check.
 - [[Partners]]: every partner card with its link, affiliate code, chip colour and logo source.
+- [[Blog]]: `Blog/*.md` posts, the shared renderer, the editor and the publish workflow.
 - [[Partner Logo Chips]]: the chip styling rule and how to prepare a logo.
 - [[Brand/Prusa|Prusa brand rules]]: the Prusa Research logo and colours, from the Prusa Brand Manual 1.0.
 - [[Decisions]]: dated log of styling and process decisions, newest first.

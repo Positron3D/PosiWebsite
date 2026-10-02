@@ -34,6 +34,10 @@ assets/css/style.css           All styles; tokens in :root
 assets/img/                    Self-hosted images (partner logos: partner-<slug>.<ext>)
 assets/js/main.js              Mobile nav
 _build/build.py                Site generator (source of truth)
+_build/requirements.txt        Python deps for the blog (Markdown, pymdown-extensions): pip install -r
+Blog/*.md                      Blog posts (source). Built to blog.html + blog-<slug>.html; see Blog/README.md
+assets/py/blogmd.py            The one Markdown renderer, shared by the build and the blog editor
+blog-editor.html               Drafting app (generated; JS in assets/js/blog-editor.js)
 _build/gallery.toml            Gallery content
 _build/preview.py              Local preview + screenshots
 vault/                         Obsidian vault: project knowledge base
@@ -49,7 +53,7 @@ branch → edit build.py (+ css/img) → rebuild → local preview → PR → ap
 ```
 
 1. **Branch from up-to-date `main`.** Never commit to `main` directly; the branch is protected.
-2. **Edit `_build/build.py`** (and `assets/` as needed), then run `python _build/build.py` (`PYTHONIOENCODING=utf-8` on Windows). Commit the regenerated HTML together with the `build.py` change.
+2. **Edit `_build/build.py`** (and `assets/` as needed), then run `python _build/build.py` (`PYTHONIOENCODING=utf-8` on Windows). The blog needs its two Python packages first: `pip install -r _build/requirements.txt`, ideally in a `.venv`. Commit the regenerated HTML together with the `build.py` change.
    - **Parity check.** Run `python _build/build.py && git status`. If the rebuild changes anything you didn't intend, `build.py` and the HTML have drifted. Fix `build.py`; don't commit hand edits to the HTML. (In May 2026 a sponsor update edited only `index.html`, and the next rebuild would have silently reverted it.)
 3. **Preview locally** (§3) and check every page you touched at all three widths.
 4. **Open a PR** using the template. Describe what changed and why, and **attach the preview screenshots** for visual changes.
@@ -120,7 +124,15 @@ Then, for every logo:
 
 ---
 
-## 5. Design rules (summary; `POSITRON_DESIGN.md` is authoritative)
+## 5. Blog
+
+- **Posts are `Blog/*.md`.** `Blog/README.md` is the author guide, and `Blog/_TEMPLATE.md` exercises every supported feature. Files starting with `_` and the README are never published, and `draft: true` posts are skipped unless you build with `--drafts`.
+- **One renderer:** `assets/py/blogmd.py` holds the extension list. The site build and the editor's in-browser preview (Pyodide) both use it, so they always match. Add Markdown features there, keep the Pyodide package pins in `assets/js/blog-editor.js` equal to `_build/requirements.txt`, and add CSS for any new elements under the blog section of `style.css`. Run `python assets/py/blogmd.py` to self-check.
+- **Publishing:** team members upload posts and images to `Blog/` through GitHub's web UI, which opens a PR. The **Build site** workflow (`.github/workflows/build-site.yml`) regenerates the pages on the PR branch, and merging publishes. Raw `.md` files aren't deployed (`.assetsignore`), so draft text never goes live.
+- **Checking a post:** `python _build/build.py --drafts`, then `python _build/preview.py blog.html blog-<slug>.html`. Before committing, build without `--drafts` so draft pages are removed again.
+- **Trust:** posts may contain raw HTML (embeds, figures). PR review is the gate, so read a post's HTML before approving it.
+
+## 6. Design rules (summary; `POSITRON_DESIGN.md` is authoritative)
 
 - **Positron is not Prusa.** The site's accent is its own amber (`--accent` `#ff9d12`, logo `#de9400`). Prusa Orange appears **only** inside the Prusa partner chip.
 - All colours come from `:root` tokens. The one sanctioned inline colour is a partner chip's `--chip-bg`.
@@ -130,7 +142,7 @@ Then, for every logo:
 
 ---
 
-## 6. Knowledge base: `vault/`
+## 7. Knowledge base: `vault/`
 
 `vault/` is an Obsidian vault. Open the folder in Obsidian ("Open folder as vault"), or read the Markdown directly.
 
@@ -140,7 +152,7 @@ Then, for every logo:
 
 ---
 
-## 7. Never
+## 8. Never
 
 - Push to `main`, force-push shared branches, or merge without an approval from @nomadsgalaxy, @erikbuild or @smiksky.
 - Hand-edit a generated `*.html` without the same change in `build.py`.
