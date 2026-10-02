@@ -1,6 +1,9 @@
 # Writing for the Positron blog
 
-Every `.md` file in this folder becomes a post on [positron3d.com/blog](https://positron3d.com/blog.html).
+Every post here becomes a page on [positron3d.com/blog](https://positron3d.com/blog.html). A post is either:
+
+- **`YYYY-MM-DD-short-title.md`**, a text-only post, or
+- **a folder `YYYY-MM-DD-short-title/`** holding the post's `.md` plus all of its images, including the cover thumbnail. Every post with images lives in its own folder.
 
 ## The easy way: the blog editor
 
@@ -21,12 +24,12 @@ Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html
 | Ctrl/⌘ + Shift + 8, 7, 9 | Bulleted list, numbered list, quote |
 | Ctrl/⌘ + Z, Shift + Z | Undo, redo |
 
-Press **Save .md**, then upload the `.md` and its images here (next step). Drafts autosave in your browser.
+Press **Save**. A text-only post downloads as a `.md`. A post with images downloads as **one `.zip`** holding the post and every image it uses, cover included. Upload that one file here (next step). To edit a post later, open its `.zip` or `.md` in the editor with **Open**. Drafts autosave in your browser.
 
 ## Publish a post
 
 1. On GitHub, open this `Blog/` folder and choose **Add file → Upload files**.
-2. Drag in your `.md` file **and its images**. They all go straight into `Blog/`.
+2. Drag in your `.zip` (or `.md`). Don't unzip it: the site does that, putting the post and its images into their own folder, `Blog/YYYY-MM-DD-short-title/`.
 3. Choose **Create a new branch** and **Propose changes**, then open the pull request.
 4. A bot rebuilds the site pages on your branch within a minute or two. Once a reviewer approves and merges, the post goes live.
 
@@ -48,7 +51,8 @@ draft: true
 
 - `title`, `date` and `author` are required.
 - `draft: true` keeps the post off the site until you change it to `false`, or delete the line.
-- Image paths are relative to this folder, so `photo.jpg` means `Blog/photo.jpg`. GitHub's own preview shows them too.
+- Image paths are relative to the post's file, so `photo.jpg` means the image sitting next to it in the post's folder. GitHub's own preview shows them too.
+- Zips may only contain one `.md` and images (`.jpg`, `.png`, `.webp`, `.gif`, `.avif`; no SVG), at the top level, up to 25 MB per file.
 
 ## Formatting
 

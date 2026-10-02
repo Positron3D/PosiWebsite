@@ -585,23 +585,47 @@ except ImportError:
 
 def _esc(s): return _html.escape(s, quote=True)
 
-posts = []
-for path in sorted(glob.glob(os.path.join(ROOT, "Blog", "*.md"))):
+# Posts saved from the blog editor with images arrive as one .zip (post + images): unpack each
+# into its own folder, Blog/<date-slug>/, first.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import blogzip
+for zpath in sorted(glob.glob(os.path.join(ROOT, "Blog", "*.zip"))):
+    try:
+        folder, names = blogzip.unpack(zpath, os.path.join(ROOT, "Blog"))
+        io.write("unpacked %s into Blog/%s/: %s\n" % (os.path.basename(zpath), folder, ", ".join(names)))
+    except (blogzip.ZipError, OSError, ValueError) as e:
+        sys.exit("Blog/%s: %s" % (os.path.basename(zpath), e))
+
+# A post is either Blog/<date-slug>.md (text only) or a folder Blog/<date-slug>/ holding one .md and
+# its images. Names starting with "_" (and the README) are never published.
+sources = []
+for path in sorted(glob.glob(os.path.join(ROOT, "Blog", "*"))):
     name = os.path.basename(path)
-    if name.startswith("_") or name.upper() == "README.MD":
+    if name.startswith(("_", ".")) or name.upper() == "README.MD":
         continue
+    if os.path.isdir(path):
+        mds = glob.glob(os.path.join(path, "*.md"))
+        if len(mds) != 1:
+            sys.exit("Blog/%s/: a post folder needs exactly one .md file, found %d" % (name, len(mds)))
+        sources.append((name, mds[0], "Blog/%s/" % name))
+    elif name.endswith(".md"):
+        sources.append((name[:-3], path, "Blog/"))
+
+posts = []
+for stem, path, prefix in sources:
+    label = os.path.relpath(path, ROOT)
     with open(path, encoding="utf-8") as f:
         try:
-            meta, body_html = blogmd.render(f.read())
+            meta, body_html = blogmd.render(f.read(), src_prefix=prefix)
         except blogmd.PostError as e:
-            sys.exit("Blog/%s: %s" % (name, e))
+            sys.exit("%s: %s" % (label, e))
     if meta["draft"] and "--drafts" not in sys.argv:
         continue
-    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", name[:-3]).lower()
+    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem).lower()
     if not re.fullmatch(r"[a-z0-9-]+", slug):
-        sys.exit("Blog/%s: file names may only use a-z, 0-9 and dashes" % name)
+        sys.exit("%s: post names may only use a-z, 0-9 and dashes" % label)
     if any(p["slug"] == slug for p in posts):
-        sys.exit("Blog/%s: another post already uses the slug %r" % (name, slug))
+        sys.exit("%s: another post already uses the slug %r" % (label, slug))
     posts.append(dict(meta, slug=slug, body=body_html))
 posts.sort(key=lambda p: p["date_obj"], reverse=True)
 
@@ -686,10 +710,10 @@ editor_body = '''  <section class="section section--tight editor">
     <div class="container">
       <p class="eyebrow">Positron Team</p>
       <h1>Blog editor</h1>
-      <p class="lead">Write the post as it will look on the site. Save the <code>.md</code>, then upload it and its images to the <code>Blog/</code> folder on GitHub. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
+      <p class="lead">Write the post as it will look on the site. <b>Save</b> gives you a <code>.md</code>, or a <code>.zip</code> with the post and all its images when it has any. Upload that file to the <code>Blog/</code> folder on GitHub; the site unpacks a zip into the post\'s own folder. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
       <div class="editor__actions">
         <button type="button" class="btn btn--sm btn--ghost" id="ed-new">New</button>
-        <label class="btn btn--sm btn--ghost">Open .md<input type="file" id="ed-open" accept=".md,text/markdown" hidden></label>
+        <label class="btn btn--sm btn--ghost">Open<input type="file" id="ed-open" accept=".md,.zip,text/markdown,application/zip" hidden></label>
         <button type="button" class="btn btn--sm" id="ed-save">Save .md</button>
         <a class="btn btn--sm btn--ghost" id="ed-upload" target="_blank" rel="noopener">Upload to GitHub</a>
         <span class="editor__file" id="ed-filename"></span>

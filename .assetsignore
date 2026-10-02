@@ -15,3 +15,5 @@ _preview/**
 vault
 vault/**
 Blog/*.md
+Blog/*/*.md
+Blog/*.zip

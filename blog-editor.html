@@ -47,10 +47,10 @@
     <div class="container">
       <p class="eyebrow">Positron Team</p>
       <h1>Blog editor</h1>
-      <p class="lead">Write the post as it will look on the site. Save the <code>.md</code>, then upload it and its images to the <code>Blog/</code> folder on GitHub. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
+      <p class="lead">Write the post as it will look on the site. <b>Save</b> gives you a <code>.md</code>, or a <code>.zip</code> with the post and all its images when it has any. Upload that file to the <code>Blog/</code> folder on GitHub; the site unpacks a zip into the post's own folder. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
       <div class="editor__actions">
         <button type="button" class="btn btn--sm btn--ghost" id="ed-new">New</button>
-        <label class="btn btn--sm btn--ghost">Open .md<input type="file" id="ed-open" accept=".md,text/markdown" hidden></label>
+        <label class="btn btn--sm btn--ghost">Open<input type="file" id="ed-open" accept=".md,.zip,text/markdown,application/zip" hidden></label>
         <button type="button" class="btn btn--sm" id="ed-save">Save .md</button>
         <a class="btn btn--sm btn--ghost" id="ed-upload" target="_blank" rel="noopener">Upload to GitHub</a>
         <span class="editor__file" id="ed-filename"></span>

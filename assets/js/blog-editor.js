@@ -13,7 +13,7 @@
   var visual = $("ed-visual"), source = $("ed-body"), status = $("ed-status");
   var md = "";            // the post body in Markdown: the source of truth
   var mode = "visual";
-  var images = {};        // file name -> blob URL, for images added this session
+  var images = {};        // file name -> {url: blob URL, file: Blob}, for images added or opened this session
   var selectedImg = null;
   var py = null, syncTimer = null;
 
@@ -40,7 +40,7 @@
   // Render a body fragment (no front matter of its own).
   function renderBody(body) { return withBlobs(pyRender("title: x\ndate: 2000-01-01\nauthor: x\n\n" + body).html); }
   function withBlobs(html) {
-    return html.replace(/(src|href)="Blog\/([^"]+)"/g, function (all, attr, name) { return images[name] ? attr + '="' + images[name] + '"' : all; });
+    return html.replace(/(src|href)="Blog\/([^"]+)"/g, function (all, attr, name) { return images[name] ? attr + '="' + images[name].url + '"' : all; });
   }
   function errorText(e) {
     var msg = String(e.message || e).split("\n").filter(Boolean).pop();
@@ -58,7 +58,7 @@
   function blockOf(nodes) { var d = document.createElement("div"); nodes.forEach(function (n) { d.appendChild(n.cloneNode(true)); }); return td.turndown(d.innerHTML); }
   function srcOf(img) {
     var src = img.getAttribute("src") || "";
-    for (var name in images) { if (images[name] === src) return name; }
+    for (var name in images) { if (images[name].url === src) return name; }
     return src.replace(/^Blog\//, "");
   }
   function imageMd(img) {
@@ -174,7 +174,7 @@
   function refreshHeader() {
     $("ed-filename").textContent = "Blog/" + fileName();
     var tags = field("tags").split(",").map(function (t) { return t.trim(); }).filter(Boolean);
-    var cover = field("cover"), coverSrc = cover ? (images[cover] || (/^(https?:|\/|\.\.)/.test(cover) ? cover.replace(/^\.\.\//, "") : "Blog/" + cover)) : "";
+    var cover = field("cover"), coverSrc = cover ? ((images[cover] && images[cover].url) || (/^(https?:|\/|\.\.)/.test(cover) ? cover.replace(/^\.\.\//, "") : "Blog/" + cover)) : "";
     $("ed-head").innerHTML =
       "<h1>" + esc(field("title") || "Untitled") + "</h1>" +
       '<p class="post-meta">' + esc(field("date")) + " · " + esc(field("author")) + "</p>" +
@@ -186,6 +186,7 @@
   function validate() {
     save();
     refreshHeader();
+    refreshSave();
     if (!py) return;
     try { pyRender(compose()); setStatus("Saved in this browser · " + md.split(/\s+/).filter(Boolean).length + " words"); }
     catch (e) { setStatus(errorText(e), true); }
@@ -528,7 +529,7 @@
       if (!/^image\//.test(f.type)) return;
       var base = (f.name || "image.png").toLowerCase().replace(/[^a-z0-9.]+/g, "-"), name = base, n = 2;
       while (images[name]) name = base.replace(/(\.[a-z0-9]+)?$/, "-" + n++ + "$1");
-      images[name] = URL.createObjectURL(f);
+      images[name] = { url: URL.createObjectURL(f), file: f };
       var snippet = "![Describe the image](" + name + ")" + placementAttrs();
       if (mode === "visual") insertBlockVisual(snippet); else insertSource("\n", snippet, "\n");
       if (!field("cover")) $("ed-cover").value = name;
@@ -595,18 +596,108 @@
   document.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { setMode(b.dataset.mode); }); });
 
   // ---------- files ----------
+  // Images the post uses: relative names in the Markdown plus the cover (the preview thumbnail).
+  function referencedImages() {
+    var names = {}, re = /!\[[^\]]*\]\(\s*<?([^)\s>]+)>?/g, m;
+    while ((m = re.exec(md))) names[m[1]] = 1;
+    if (field("cover")) names[field("cover")] = 1;
+    return Object.keys(names).filter(function (n) { return !/^([a-z][a-z0-9+.-]*:|\/|\.\.?\/|#)/i.test(n); });
+  }
+  function refreshSave() {
+    var n = referencedImages().length;
+    $("ed-save").textContent = n ? "Save .zip (post + " + n + " image" + (n > 1 ? "s" : "") + ")" : "Save .md";
+  }
+  function download(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
+  }
+  // A post with images saves as one zip: <date-slug>.md plus every image it uses, all at the top level.
+  // The site build unpacks it into its own folder, Blog/<date-slug>/.
   $("ed-save").addEventListener("click", function () {
     if (mode === "visual") md = toMarkdown(visual); else md = source.value;
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([compose()], { type: "text/markdown" }));
-    a.download = fileName();
-    a.click();
+    clearTimeout(syncTimer); validate(); // flush pending edits first, so their status can't overwrite save warnings
+    var text = compose(), names = referencedImages();
+    if (!names.length) return download(new Blob([text], { type: "text/markdown" }), fileName());
+    var missing = [];
+    Promise.all(names.map(function (n) {
+      if (images[n]) return images[n].file;
+      // An image from an already-published post: take it from the site.
+      return fetch("Blog/" + fileName().replace(/\.md$/, "") + "/" + n).then(function (r) { if (!r.ok) throw r; return r.blob(); })
+        .catch(function () { missing.push(n); return null; });
+    })).then(function (blobs) {
+      var files = [{ name: fileName(), blob: new Blob([text]) }];
+      names.forEach(function (n, i) { if (blobs[i]) files.push({ name: n, blob: blobs[i] }); });
+      return makeZip(files);
+    }).then(function (zip) {
+      download(zip, fileName().replace(/\.md$/, ".zip"));
+      if (missing.length) setStatus("Saved, but these images weren't found and aren't in the zip: " + missing.join(", ") + ". Add them again with the image button.", true);
+    });
   });
   $("ed-open").addEventListener("change", function (ev) {
     var f = ev.target.files[0];
-    if (f) f.text().then(load);
     ev.target.value = "";
+    if (!f) return;
+    if (!/\.zip$/i.test(f.name)) return f.text().then(load);
+    readZip(f).then(function (entries) {
+      var post = entries.filter(function (e) { return /\.md$/i.test(e.name); })[0];
+      if (!post) throw new Error("no .md file in the zip");
+      entries.forEach(function (e) {
+        if (e !== post && /\.(jpe?g|png|webp|gif|avif)$/i.test(e.name)) images[e.name] = { url: URL.createObjectURL(e.blob), file: e.blob };
+      });
+      return post.blob.text().then(load);
+    }).catch(function (e) { setStatus("Couldn't open that zip: " + (e.message || e), true); });
   });
+
+  // ---------- zip: write (stored, no compression; photos are already compressed) and read ----------
+  var CRC = (function () { var t = [], c, n, k; for (n = 0; n < 256; n++) { c = n; for (k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(u8) { var c = 0xFFFFFFFF; for (var i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function makeZip(files) {
+    return Promise.all(files.map(function (f) { return f.blob.arrayBuffer(); })).then(function (bufs) {
+      var d = new Date(), time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+      var date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+      var parts = [], central = [], offset = 0;
+      files.forEach(function (f, i) {
+        var data = new Uint8Array(bufs[i]), name = new TextEncoder().encode(f.name), crc = crc32(data);
+        var h = new DataView(new ArrayBuffer(30));
+        [[0, 0x04034b50, 4], [4, 20, 2], [6, 0x0800, 2], [8, 0, 2], [10, time, 2], [12, date, 2], [14, crc, 4], [18, data.length, 4], [22, data.length, 4], [26, name.length, 2], [28, 0, 2]]
+          .forEach(function (x) { x[2] === 4 ? h.setUint32(x[0], x[1], true) : h.setUint16(x[0], x[1], true); });
+        var c = new DataView(new ArrayBuffer(46));
+        [[0, 0x02014b50, 4], [4, 20, 2], [6, 20, 2], [8, 0x0800, 2], [10, 0, 2], [12, time, 2], [14, date, 2], [16, crc, 4], [20, data.length, 4], [24, data.length, 4], [28, name.length, 2], [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, offset, 4]]
+          .forEach(function (x) { x[2] === 4 ? c.setUint32(x[0], x[1], true) : c.setUint16(x[0], x[1], true); });
+        parts.push(h, name, data); central.push(c, name);
+        offset += 30 + name.length + data.length;
+      });
+      var size = central.reduce(function (t, p) { return t + p.byteLength; }, 0), e = new DataView(new ArrayBuffer(22));
+      [[0, 0x06054b50, 4], [4, 0, 2], [6, 0, 2], [8, files.length, 2], [10, files.length, 2], [12, size, 4], [16, offset, 4], [20, 0, 2]]
+        .forEach(function (x) { x[2] === 4 ? e.setUint32(x[0], x[1], true) : e.setUint16(x[0], x[1], true); });
+      return new Blob(parts.concat(central, [e]), { type: "application/zip" });
+    });
+  }
+  // Reads stored and deflated entries (deflate via the browser's DecompressionStream).
+  function readZip(file) {
+    return file.arrayBuffer().then(function (buf) {
+      var v = new DataView(buf), i = buf.byteLength - 22;
+      while (i >= 0 && v.getUint32(i, true) !== 0x06054b50) i--;
+      if (i < 0) throw new Error("not a zip file");
+      var count = v.getUint16(i + 10, true), p = v.getUint32(i + 16, true), out = [];
+      for (var n = 0; n < count; n++) {
+        var method = v.getUint16(p + 10, true), csize = v.getUint32(p + 20, true), nlen = v.getUint16(p + 28, true);
+        var elen = v.getUint16(p + 30, true), clen = v.getUint16(p + 32, true), local = v.getUint32(p + 42, true);
+        var name = new TextDecoder().decode(new Uint8Array(buf, p + 46, nlen)).split("/").pop();
+        var start = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+        var raw = new Blob([new Uint8Array(buf, start, csize)]);
+        if (name) out.push({ name: name, method: method, raw: raw });
+        p += 46 + nlen + elen + clen;
+      }
+      return Promise.all(out.map(function (e) {
+        if (e.method === 0) return { name: e.name, blob: e.raw };
+        if (e.method !== 8) throw new Error(e.name + " uses an unsupported compression method");
+        return new Response(e.raw.stream().pipeThrough(new DecompressionStream("deflate-raw"))).blob().then(function (b) { return { name: e.name, blob: b }; });
+      }));
+    });
+  }
+
   $("ed-new").addEventListener("click", function () {
     if (!md.trim() || window.confirm("Start a new post? The current draft is cleared from this browser.")) load("date: " + today() + "\ndraft: true\n\n");
   });
