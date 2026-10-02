@@ -25,7 +25,7 @@
 
 - The static site for **positron3d.com**: plain HTML/CSS/JS, no framework, no npm.
 - **`_build/build.py` is the source of truth.** It holds the header, nav, footer and every page's content. The root `*.html` files are **generated** from it.
-- **Hosting:** the Cloudflare Worker **`posiwebsite`** (Workers Builds, static assets from the repo root, `wrangler.jsonc`) serves the domain and **deploys automatically when `main` changes**. A GitHub Pages workflow (`.github/workflows/deploy.yml`) also runs, but Cloudflare serves the domain.
+- **Hosting:** the Cloudflare Worker **`posiwebsite`** (Workers Builds, static assets from the repo root, `wrangler.jsonc`) serves the domain and **deploys automatically when `main` changes**. Each deploy first runs `wrangler.jsonc`'s `build.command`: `pip install -r _build/requirements.txt && python _build/build.py --lenient`. That regenerates every page, the blog and `feed.xml`, so a post that reaches `main` by any route publishes. `--lenient` skips a broken post with a warning in the Cloudflare build log instead of failing the deploy. The committed HTML must still match `build.py` (parity check), and PR checks build strictly. There's no GitHub Pages deploy any more.
 - **Not deployed:** docs, `_build/`, `_preview/` and `vault/` are listed in `.assetsignore`. Keep new internal files out of the served site the same way.
 
 ```

@@ -676,6 +676,8 @@
     if (mode === "visual") md = toMarkdown(visual); else md = source.value;
     clearTimeout(syncTimer); validate(); // flush pending edits first, so their status can't overwrite save warnings
     var text = compose(), names = referencedImages();
+    var draftNote = $("ed-draft").checked ? " This is a draft: it won't appear on the site until you untick Draft and upload it again." : "";
+    if (draftNote) setStatus("Saved." + draftNote);
     if (!names.length) return download(new Blob([text], { type: "text/markdown" }), fileName());
     var missing = [];
     Promise.all(names.map(function (n) {
@@ -689,7 +691,7 @@
       return makeZip(files);
     }).then(function (zip) {
       download(zip, fileName().replace(/\.md$/, ".zip"));
-      if (missing.length) setStatus("Saved, but these images weren't found and aren't in the zip: " + missing.join(", ") + ". Add them again with the image button.", true);
+      if (missing.length) setStatus("Saved, but these images weren't found and aren't in the zip: " + missing.join(", ") + ". Add them again with the image button." + draftNote, true);
     });
   });
   $("ed-open").addEventListener("change", function (ev) {
@@ -757,7 +759,7 @@
   }
 
   $("ed-new").addEventListener("click", function () {
-    if (!md.trim() || window.confirm("Start a new post? The current draft is cleared from this browser.")) load("date: " + today() + "\ndraft: true\n\n");
+    if (!md.trim() || window.confirm("Start a new post? The current draft is cleared from this browser.")) load("date: " + today() + "\n\n");
   });
   $("ed-upload").href = UPLOAD_URL;
   FIELDS.concat(["draft"]).forEach(function (k) { $("ed-" + k).addEventListener("input", validate); });
@@ -766,7 +768,7 @@
   var saved = null;
   try { saved = localStorage.getItem(STORE); } catch (e) { /* storage blocked */ }
   document.execCommand("defaultParagraphSeparator", false, "p");
-  load(saved || "date: " + today() + "\ndraft: true\n\n");
+  load(saved || "date: " + today() + "\n\n");
   visual.innerHTML = '<p class="editor__loading">Loading the editor (the first load takes a few seconds)…</p>';
   visual.contentEditable = "false";
   setStatus("Loading the editor…");

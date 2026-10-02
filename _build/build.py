@@ -589,12 +589,21 @@ def _esc(s): return _html.escape(s, quote=True)
 # into its own folder, Blog/<date-slug>/, first.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import blogzip
+
+# --lenient (the Cloudflare deploy build): a broken post or zip is skipped with a warning instead of
+# stopping the whole deploy. Posts can reach main by direct upload, so one bad file mustn't block the
+# site. PR checks and local builds stay strict, so problems are caught before merge when possible.
+LENIENT = "--lenient" in sys.argv
+def problem(msg):
+    if not LENIENT:
+        sys.exit(msg)
+    io.write("WARNING, skipped: %s\n" % msg)
 for zpath in sorted(glob.glob(os.path.join(ROOT, "Blog", "*.zip"))):
     try:
         folder, names = blogzip.unpack(zpath, os.path.join(ROOT, "Blog"))
         io.write("unpacked %s into Blog/%s/: %s\n" % (os.path.basename(zpath), folder, ", ".join(names)))
     except (blogzip.ZipError, OSError, ValueError) as e:
-        sys.exit("Blog/%s: %s" % (os.path.basename(zpath), e))
+        problem("Blog/%s: %s" % (os.path.basename(zpath), e))
 
 # A post is either Blog/<date-slug>.md (text only) or a folder Blog/<date-slug>/ holding one .md and
 # its images. Names starting with "_" (and the README) are never published.
@@ -606,7 +615,8 @@ for path in sorted(glob.glob(os.path.join(ROOT, "Blog", "*"))):
     if os.path.isdir(path):
         mds = glob.glob(os.path.join(path, "*.md"))
         if len(mds) != 1:
-            sys.exit("Blog/%s/: a post folder needs exactly one .md file, found %d" % (name, len(mds)))
+            problem("Blog/%s/: a post folder needs exactly one .md file, found %d" % (name, len(mds)))
+            continue
         sources.append((name, mds[0], "Blog/%s/" % name))
     elif name.endswith(".md"):
         sources.append((name[:-3], path, "Blog/"))
@@ -618,14 +628,19 @@ for stem, path, prefix in sources:
         try:
             meta, body_html = blogmd.render(f.read(), src_prefix=prefix)
         except blogmd.PostError as e:
-            sys.exit("%s: %s" % (label, e))
+            problem("%s: %s" % (label, e))
+            continue
     if meta["draft"] and "--drafts" not in sys.argv:
+        io.write("draft, not published: %s (remove 'draft: true' to publish)\n" % label)
         continue
-    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem).lower()
+    # Browsers save a second download as "name (1).md"; that suffix isn't part of the post's name.
+    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-|\s*\(\d+\)$", "", stem).lower()
     if not re.fullmatch(r"[a-z0-9-]+", slug):
-        sys.exit("%s: post names may only use a-z, 0-9 and dashes" % label)
+        problem("%s: post names may only use a-z, 0-9 and dashes" % label)
+        continue
     if any(p["slug"] == slug for p in posts):
-        sys.exit("%s: another post already uses the slug %r" % (label, slug))
+        problem("%s: another post already uses the slug %r" % (label, slug))
+        continue
     posts.append(dict(meta, slug=slug, body=body_html))
 posts.sort(key=lambda p: p["date_obj"], reverse=True)
 
@@ -784,7 +799,7 @@ editor_body = '''  <section class="section section--tight editor">
         <label>Tags<input id="ed-tags" placeholder="positron, build log"></label>
         <label class="editor__wide">Summary<input id="ed-summary" placeholder="One sentence for the blog page and link previews"></label>
         <label>Cover image<input id="ed-cover" placeholder="cover.jpg"></label>
-        <label class="editor__check"><input type="checkbox" id="ed-draft"> Draft (not published)</label>
+        <label class="editor__check" title="Drafts are uploaded but never shown on the site"><input type="checkbox" id="ed-draft"> Draft (won\'t be published)</label>
       </div>
       <div class="editor__bar">
         <div class="editor__modes" role="group" aria-label="Editing mode">

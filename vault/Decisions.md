@@ -9,6 +9,20 @@ tags: [positron, decisions]
 
 Newest first. One entry per styling or process call, with the reason.
 
+## 2026-10-02: Build the site at deploy time; new posts aren't drafts by default
+
+- **What broke:** uploaded posts weren't appearing. Investigation found three causes:
+  1. while the repo was briefly private, branch protection was off (free plan), so uploads went straight to `main` with no PR;
+  2. the Build site workflow only runs on PRs, so no pages were generated;
+  3. every test post had `draft: true`, because the editor ticked Draft by default;
+  4. a re-downloaded file arrived as `name (1).md`, which failed the file-name check.
+- **Fixes:**
+  - Cloudflare's deploy now runs `build.py --lenient`, so any post on `main` publishes and a broken one is skipped, not fatal;
+  - the editor starts posts unticked, and saving a draft says it won't publish;
+  - the build log names every skipped draft;
+  - the build ignores a browser's ` (1)` download suffix;
+  - the unused GitHub Pages workflow is removed (Cloudflare serves the domain).
+
 ## 2026-10-01: Alignment rules from a measured audit
 
 - **`.btn { line-height: inherit }`:** `<button>` elements don't inherit line height, so `<button class="btn">` was 33 px while `<a class="btn">` was 41 px. All buttons now match.

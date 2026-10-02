@@ -1,9 +1,14 @@
 {
   // Cloudflare Workers Static Assets — hosts this static site directly on Cloudflare
   // (replaces GitHub Pages). positron3d.com points at the "posiwebsite" Worker.
-  // No build step. Deploy command = `npx wrangler deploy`.
+  // Deploy command = `npx wrangler deploy`, which first runs build.command below: it regenerates
+  // every page, the blog and feed.xml from _build/ and Blog/, so a post reaching main by any route
+  // (PR, direct upload, zip) is published. --lenient skips a broken post instead of failing the deploy.
   "name": "posiwebsite",
   "compatibility_date": "2026-06-03",
+  "build": {
+    "command": "export PYTHONDONTWRITEBYTECODE=1 && python -m pip install --quiet -r _build/requirements.txt && python _build/build.py --lenient"
+  },
   "assets": {
     "directory": ".",
     "html_handling": "auto-trailing-slash",
