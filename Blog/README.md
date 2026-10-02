@@ -7,7 +7,7 @@ Every post here becomes a page on [positron3d.com/blog](https://positron3d.com/b
 
 ## The easy way: the blog editor
 
-Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html)**. It's a visual editor: you write directly on the post as it will look on the site.
+The team has a visual editor at an **unlisted link**; ask a team member for it. It isn't linked from the site, so please don't post the link publicly. In the editor you write directly on the post as it will look on the site.
 
 - **Type `/`** on an empty line for the block menu: headings, lists, callouts, collapsibles, tabs, tables, code, images, videos and more. Keep typing to filter, then press Enter.
 - **Markdown shortcuts work as you type:** `## ` heading, `### ` subheading, `- ` list, `1. ` numbered list, `[] ` tasks, `> ` quote. `---` or ` ``` ` followed by Enter gives a divider or a code block.
@@ -70,6 +70,7 @@ draft: true
 | Tabs | `=== "Tab name"` |
 | Strikethrough, highlight | `~~old~~`, `==new==` |
 | Table of contents | `[TOC]` on its own line |
+| Code with syntax highlighting | a fence with the language after it: ` ```ini ` (Klipper configs), ` ```gcode `, ` ```python `, ` ```bash `, ` ```c `, ` ```yaml ` |
 
 Files starting with `_` (like the template) and this README are never published.
 

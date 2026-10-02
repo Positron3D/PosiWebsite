@@ -89,6 +89,13 @@ Term
 print("Fenced code blocks keep their formatting")
 ```
 
+Name the language after the opening fence for syntax highlighting, e.g. `ini` for Klipper configs, `gcode`, `python`, `bash`, `c` or `yaml`:
+
+```gcode
+G28 ; home all axes
+G1 X90 Y90 Z10 F3000
+```
+
 ## Footnotes and abbreviations
 
 The Positron fits in carry-on luggage.[^1] Use a STEP file for CAD.

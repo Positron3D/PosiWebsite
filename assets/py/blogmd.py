@@ -1,5 +1,5 @@
 # ABOUTME: Renders one Blog/*.md post to HTML with the full Positron markdown feature set.
-# ABOUTME: Shared by _build/build.py (site build) and blog-editor.html (Pyodide live preview).
+# ABOUTME: Shared by _build/build.py (site build) and the blog editor page (Pyodide live preview).
 import datetime
 import re
 
@@ -23,6 +23,7 @@ EXTENSIONS = [
     "pymdownx.keys",         # ++ctrl+alt+del++
     "pymdownx.magiclink",    # bare URLs become links
     "pymdownx.emoji",        # :tada:
+    "pymdownx.highlight",    # syntax highlighting (Pygments) for code fences
     "pymdownx.superfences",  # ``` code fences that also work inside tabs, callouts and lists
 ]
 EXTENSION_CONFIGS = {
@@ -30,6 +31,8 @@ EXTENSION_CONFIGS = {
     "pymdownx.tasklist": {"custom_checkbox": True},
     "pymdownx.tabbed": {"alternate_style": True},
     "pymdownx.emoji": {"emoji_generator": pymdownx.emoji.to_alt},  # plain Unicode, no image CDN
+    # language-<lang> on the wrapper lets the editor turn highlighted blocks back into ```lang fences
+    "pymdownx.highlight": {"pygments_lang_class": True, "guess_lang": False},
 }
 REQUIRED = ("title", "date", "author")
 WORDS_PER_MINUTE = 220
@@ -90,6 +93,8 @@ Text ~~old~~ ==new==.
     assert 'src="Blog/photo.jpg"' in html and 'class="right"' in html, html
     _, tabs = render("title: t\ndate: 2026-10-01\nauthor: a\n\n=== \"A\"\n    ```c\n    #define X\n    ```\n")
     assert "<h1" not in tabs and "#define X" in tabs, tabs
+    _, code = render("title: t\ndate: 2026-10-01\nauthor: a\n\n```ini\n[printer]\nkinematics: corexy\n```\n")
+    assert 'class="language-ini highlight"' in code and '<span class="k">[printer]</span>' in code, code
     assert "<del>old</del>" in html and "<mark>new</mark>" in html and 'class="admonition tip"' in html
     try:
         render("title: x\n\nbody")
