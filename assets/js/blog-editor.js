@@ -163,7 +163,7 @@
     clone.querySelectorAll("th[style], td[style]").forEach(function (c) { if (c.style.textAlign) c.setAttribute("align", c.style.textAlign); });
     clone.querySelectorAll(".is-selected").forEach(function (c) { c.classList.remove("is-selected"); if (!c.className) c.removeAttribute("class"); });
     abbrs = {};
-    var out = td.turndown(clone.innerHTML);
+    var out = td.turndown(clone.innerHTML.replace(/\u200b/g, ""));
     var defs = Object.keys(abbrs).map(function (k) { return "*[" + k + "]: " + abbrs[k]; });
     return (out + (defs.length ? "\n\n" + defs.join("\n") : "")).replace(/^[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n").trim(); // drop empty-paragraph blanks
   }
@@ -227,30 +227,41 @@
     if (mode === "visual") renderVisual(); else validate();
   }
 
-  // ---------- toolbar ----------
-  // Markdown snippets: inserted as text in Markdown mode, rendered and inserted in Visual mode.
-  var BLOCKS = {
-    table: "| Column | Column |\n|:--|:--|\n| Cell | Cell |",
-    note: '!!! note\n    Callout text.',
-    tip: '!!! tip "Pro tip"\n    Callout text.',
-    warning: '!!! warning\n    Callout text.',
-    details: '??? info "Click to expand"\n    Hidden until opened.',
-    tabs: '=== "Klipper"\n    ```ini\n    [printer]\n    ```\n\n=== "Marlin"\n    ```c\n    #define COREXY\n    ```',
-    fence: "```ini\n[printer]\nkinematics: corexy\n```",
-    toc: "[TOC]", hr: "---", task: "- [ ] To do\n- [x] Done",
-    video: '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID" title="What the video shows" allowfullscreen></iframe></div>'
+  // ---------- commands: one registry for the toolbar, shortcuts and the "/" menu ----------
+  // block: Markdown snippet (rendered and inserted in Visual mode, typed in Markdown mode)
+  // exec:  [execCommand, value] for Visual mode; md: [before, sample, after] for Markdown mode
+  var COMMANDS = {
+    undo: { label: "Undo", keys: "Mod+Z", exec: ["undo"] },
+    redo: { label: "Redo", keys: "Mod+Shift+Z", exec: ["redo"] },
+    p: { label: "Text", keys: "Mod+Alt+0", exec: ["formatBlock", "p"], md: ["", "", ""], menu: "Plain paragraph" },
+    h2: { label: "Heading", keys: "Mod+Alt+2", exec: ["formatBlock", "h2"], md: ["\n## ", "Heading", "\n"], menu: "Big section heading", auto: "##" },
+    h3: { label: "Subheading", keys: "Mod+Alt+3", exec: ["formatBlock", "h3"], md: ["\n### ", "Subheading", "\n"], menu: "Smaller heading", auto: "###" },
+    bold: { label: "Bold", keys: "Mod+B", exec: ["bold"], md: ["**", "bold", "**"], state: "bold" },
+    italic: { label: "Italic", keys: "Mod+I", exec: ["italic"], md: ["*", "italic", "*"], state: "italic" },
+    strike: { label: "Strikethrough", keys: "Mod+Shift+X", exec: ["strikeThrough"], md: ["~~", "struck", "~~"], state: "strikeThrough" },
+    mark: { label: "Highlight", keys: "Mod+Shift+H", wrap: "mark", md: ["==", "highlight", "=="] },
+    code: { label: "Inline code", keys: "Mod+E", wrap: "code", md: ["`", "code", "`"] },
+    link: { label: "Link", keys: "Mod+K", run: function () { openLink(); }, md: ["[", "link text", "](https://)"] },
+    ul: { label: "Bulleted list", keys: "Mod+Shift+8", exec: ["insertUnorderedList"], md: ["\n- ", "Item", "\n"], state: "insertUnorderedList", menu: "A simple list", auto: "-" },
+    ol: { label: "Numbered list", keys: "Mod+Shift+7", exec: ["insertOrderedList"], md: ["\n1. ", "Item", "\n"], state: "insertOrderedList", menu: "A list with numbers", auto: "1." },
+    task: { label: "Task list", block: "- [ ] To do\n- [x] Done", menu: "Checklist with tick boxes", auto: "[]" },
+    quote: { label: "Quote", keys: "Mod+Shift+9", exec: ["formatBlock", "blockquote"], md: ["\n> ", "Quote", "\n"], menu: "Quote someone", auto: ">" },
+    note: { label: "Note callout", block: "!!! note\n    Callout text.", menu: "Highlighted note box" },
+    tip: { label: "Tip callout", block: '!!! tip "Pro tip"\n    Callout text.', menu: "Green tip box" },
+    warning: { label: "Warning callout", block: "!!! warning\n    Callout text.", menu: "Amber warning box" },
+    details: { label: "Collapsible section", block: '??? info "Click to expand"\n    Hidden until opened.', menu: "Hidden until clicked" },
+    tabs: { label: "Tabs", block: '=== "Klipper"\n    ```ini\n    [printer]\n    ```\n\n=== "Marlin"\n    ```c\n    #define COREXY\n    ```', menu: "Switchable tabs, e.g. per firmware" },
+    table: { label: "Table", block: "| Column | Column |\n|:--|:--|\n| Cell | Cell |", menu: "Rows and columns" },
+    fence: { label: "Code block", block: "```ini\n[printer]\nkinematics: corexy\n```", menu: "Config, G-code or code", auto: "```" },
+    image: { label: "Image", run: function () { $("ed-images").click(); }, menu: "Upload a photo (or drag one in)" },
+    video: { label: "YouTube video", block: '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID" title="What the video shows" allowfullscreen></iframe></div>', menu: "Embed a YouTube video" },
+    toc: { label: "Table of contents", block: "[TOC]", menu: "Links to every heading" },
+    hr: { label: "Divider", block: "---", menu: "Horizontal line", auto: "---" }
   };
-  // Inline/simple formats: [execCommand, arg] in Visual mode, [before, sample, after] in Markdown mode.
-  var INLINE = {
-    h2: [["formatBlock", "h2"], ["\n## ", "Heading", "\n"]], h3: [["formatBlock", "h3"], ["\n### ", "Subheading", "\n"]],
-    p: [["formatBlock", "p"], ["", "", ""]],
-    bold: [["bold"], ["**", "bold", "**"]], italic: [["italic"], ["*", "italic", "*"]],
-    strike: [["strikeThrough"], ["~~", "struck", "~~"]], mark: [["mark"], ["==", "highlight", "=="]],
-    code: [["code"], ["`", "code", "`"]], link: [["link"], ["[", "link text", "](https://)"]],
-    quote: [["formatBlock", "blockquote"], ["\n> ", "Quote", "\n"]],
-    ul: [["insertUnorderedList"], ["\n- ", "Item", "\n"]], ol: [["insertOrderedList"], ["\n1. ", "Item", "\n"]],
-    undo: [["undo"], null], redo: [["redo"], null]
-  };
+  var IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform);
+  function keyLabel(k) { return k.replace("Mod", IS_MAC ? "⌘" : "Ctrl").replace("Alt", IS_MAC ? "⌥" : "Alt").replace("Shift", IS_MAC ? "⇧" : "Shift"); }
+  var SHORTCUTS = {};
+  Object.keys(COMMANDS).forEach(function (k) { if (COMMANDS[k].keys) SHORTCUTS[COMMANDS[k].keys.toLowerCase()] = k; });
 
   function insertSource(before, text, after) {
     var s = source.selectionStart, e = source.selectionEnd, sel = source.value.slice(s, e) || text;
@@ -259,27 +270,75 @@
     source.focus(); fromSource();
   }
   function wrapSelection(tag) {
-    var sel = window.getSelection();
-    var text = sel.rangeCount ? sel.toString() : "";
-    document.execCommand("insertHTML", false, "<" + tag + ">" + esc(text || tag) + "</" + tag + ">");
+    var sel = window.getSelection(), el = closestIn(sel.anchorNode, tag.toUpperCase());
+    if (el) { // toggle off: unwrap the element
+      while (el.firstChild) el.parentNode.insertBefore(el.firstChild, el);
+      el.remove();
+      return;
+    }
+    if (sel.isCollapsed) { // nothing selected: start the format for what's typed next
+      var el2 = document.createElement(tag);
+      el2.textContent = "\u200b";
+      sel.getRangeAt(0).insertNode(el2);
+      var r = document.createRange(); r.setStart(el2.firstChild, 1); r.collapse(true);
+      sel.removeAllRanges(); sel.addRange(r);
+      return;
+    }
+    document.execCommand("insertHTML", false, "<" + tag + ">" + esc(sel.toString()) + "</" + tag + ">");
   }
-  function runVisual(cmd) {
+  function closestIn(node, names) {
+    for (var n = node; n && n !== visual; n = n.parentNode) if (n.nodeName && names.indexOf(n.nodeName) !== -1) return n;
+    return null;
+  }
+  function topBlock(node) {
+    if (!node || !visual.contains(node) || node === visual) return null;
+    while (node.parentNode !== visual) node = node.parentNode;
+    return node;
+  }
+  // The caret's top-level block. Bare text typed straight into the editor is wrapped in a <p> first,
+  // so every block feature (autoformat, "/" menu, inserts) can rely on paragraphs.
+  function caretBlock() {
+    var s = window.getSelection(), b = s.rangeCount ? topBlock(s.anchorNode) : null;
+    if (b && b.nodeType === 3) { document.execCommand("formatBlock", false, "p"); b = topBlock(s.anchorNode); }
+    return b;
+  }
+  function isEmptyBlock(b) { return b && b.nodeName === "P" && !b.textContent.trim() && !b.querySelector("img,iframe"); }
+  function placeCaret(node, atEnd) {
+    var r = document.createRange(), sel = window.getSelection();
+    r.selectNodeContents(node); r.collapse(!atEnd);
+    sel.removeAllRanges(); sel.addRange(r);
+  }
+
+  function runCommand(k) {
+    var c = COMMANDS[k];
+    if (mode === "markdown") {
+      if (c.run) return c.run();
+      if (c.block) return insertSource("\n", c.block, "\n");
+      if (c.md) return insertSource(c.md[0], c.md[1], c.md[2]);
+      return document.execCommand(c.exec[0]); // undo/redo in the textarea
+    }
     visual.focus();
-    if (cmd[0] === "mark") wrapSelection("mark");
-    else if (cmd[0] === "code") wrapSelection("code");
-    else if (cmd[0] === "link") { var url = window.prompt("Link address", "https://"); if (url) document.execCommand("createLink", false, url); }
-    else document.execCommand(cmd[0], false, cmd[1] || null);
-    fromVisual();
+    var blk = caretBlock();
+    if ((k === "ul" || k === "ol") && isEmptyBlock(blk)) { // Chrome nests lists inside an empty <p>; build it directly
+      var list = document.createElement(k), li = document.createElement("li");
+      li.appendChild(document.createElement("br")); list.appendChild(li);
+      blk.replaceWith(list); placeCaret(li, false);
+      fromVisual(); updateState(); return;
+    }
+    if (c.run) c.run();
+    else if (c.block) insertBlockVisual(c.block);
+    else if (c.wrap) wrapSelection(c.wrap);
+    else document.execCommand(c.exec[0], false, c.exec[1] || null);
+    fromVisual(); updateState();
   }
+
   // Blocks (callouts, tabs, images…) go after the paragraph holding the caret, never inside it:
   // inserting block HTML mid-paragraph makes browsers merge it into the text.
+  // An empty paragraph (e.g. after choosing from the "/" menu) is replaced instead.
   function insertBlockVisual(snippet) {
     if (!py) return;
-    var sel = window.getSelection(), anchor = null;
-    if (sel.rangeCount && visual.contains(sel.anchorNode)) {
-      anchor = sel.anchorNode;
-      while (anchor && anchor.parentNode !== visual) anchor = anchor.parentNode;
-    }
+    var sel = window.getSelection();
+    var anchor = sel.rangeCount ? topBlock(sel.anchorNode) : null;
     var tmp = document.createElement("div");
     tmp.innerHTML = renderBody(snippet);
     var after = document.createElement("p");
@@ -287,22 +346,174 @@
     tmp.appendChild(after);
     var ref = anchor ? anchor.nextSibling : null;
     while (tmp.firstChild) visual.insertBefore(tmp.firstChild, ref);
-    var r = document.createRange();
-    r.setStart(after, 0); r.collapse(true);
-    sel.removeAllRanges(); sel.addRange(r);
+    if (isEmptyBlock(anchor)) anchor.remove();
+    placeCaret(after, false);
     visual.focus();
     fromVisual();
   }
 
+  // Toolbar buttons
   document.querySelectorAll("[data-cmd]").forEach(function (b) {
+    var c = COMMANDS[b.dataset.cmd];
+    b.title = c.label + (c.keys ? " (" + keyLabel(c.keys) + ")" : "");
+    b.setAttribute("aria-label", c.label);
     b.addEventListener("mousedown", function (ev) { ev.preventDefault(); }); // keep the text selection
-    b.addEventListener("click", function () {
-      var k = b.dataset.cmd;
-      if (BLOCKS[k]) return mode === "visual" ? insertBlockVisual(BLOCKS[k]) : insertSource("\n", BLOCKS[k], "\n");
-      var spec = INLINE[k];
-      if (mode === "visual") runVisual(spec[0]);
-      else if (spec[1]) insertSource(spec[1][0], spec[1][1], spec[1][2]);
+    b.addEventListener("click", function () { runCommand(b.dataset.cmd); });
+  });
+
+  // Keyboard shortcuts (both modes)
+  function comboOf(ev) {
+    var key = ev.code.replace(/^Key|^Digit/, "").toLowerCase();
+    return (ev.ctrlKey || ev.metaKey ? "mod+" : "") + (ev.altKey ? "alt+" : "") + (ev.shiftKey ? "shift+" : "") + key;
+  }
+  [visual, source].forEach(function (el) {
+    el.addEventListener("keydown", function (ev) {
+      if (menu.open && handleMenuKey(ev)) return;
+      var k = SHORTCUTS[comboOf(ev)];
+      if (k && k !== "undo" && k !== "redo") { ev.preventDefault(); runCommand(k); }
+      else if (el === visual) autoformat(ev);
     });
+  });
+
+  // Toolbar state: highlight the formats under the caret
+  function updateState() {
+    if (mode !== "visual" || !visual.contains(window.getSelection().anchorNode)) return;
+    var n = window.getSelection().anchorNode, block = caretBlock();
+    var on = {
+      bold: document.queryCommandState("bold"), italic: document.queryCommandState("italic"),
+      strike: document.queryCommandState("strikeThrough"),
+      ul: document.queryCommandState("insertUnorderedList"), ol: document.queryCommandState("insertOrderedList"),
+      mark: !!closestIn(n, ["MARK"]), code: !!closestIn(n, ["CODE"]), link: !!closestIn(n, ["A"]),
+      h2: !!(block && block.nodeName === "H2"), h3: !!(block && block.nodeName === "H3"),
+      quote: !!closestIn(n, ["BLOCKQUOTE"]), p: !!(block && block.nodeName === "P")
+    };
+    document.querySelectorAll("[data-cmd]").forEach(function (b) {
+      if (b.dataset.cmd in on) b.setAttribute("aria-pressed", String(on[b.dataset.cmd]));
+    });
+  }
+  // Drop formats started with nothing selected and then left empty (they hold only a zero-width space).
+  function cleanEmptyFormats() {
+    var at = window.getSelection().anchorNode;
+    visual.querySelectorAll("mark, code").forEach(function (el) {
+      if (el.textContent.replace(/\u200b/g, "") === "" && !el.contains(at)) el.remove();
+    });
+  }
+  document.addEventListener("selectionchange", function () { if (mode === "visual") { cleanEmptyFormats(); updateState(); } });
+
+  // Markdown-style autoformat at the start of a paragraph: "## " heading, "- " list, "> " quote,
+  // "1. " numbered, "[] " tasks; "---" or "```" then Enter for a divider or code block.
+  function autoformat(ev) {
+    if (ev.key !== " " && ev.key !== "Enter") return;
+    var sel = window.getSelection(), block = caretBlock();
+    if (!block || block.nodeName !== "P" || !sel.isCollapsed) return;
+    var text = block.textContent;
+    var k = Object.keys(COMMANDS).find(function (x) { return COMMANDS[x].auto === text; });
+    if (!k || (ev.key === "Enter") !== (k === "hr" || k === "fence")) return;
+    ev.preventDefault();
+    block.innerHTML = "<br>";
+    placeCaret(block, false);
+    runCommand(k);
+  }
+
+  // ---------- "/" command menu ----------
+  var menu = { el: $("ed-menu"), open: false, items: [], index: 0, block: null };
+  var MENU_KEYS = Object.keys(COMMANDS).filter(function (k) { return COMMANDS[k].menu; });
+  function iconFor(k) { var b = document.querySelector('[data-cmd="' + k + '"]'); return b ? b.innerHTML : ""; }
+  function showMenu(block, query) {
+    var q = query.toLowerCase();
+    // Rank like other editors: label prefix, then a word in the label, then anywhere in label or description.
+    function score(k) {
+      var label = COMMANDS[k].label.toLowerCase();
+      if (!q) return 1;
+      if (label.indexOf(q) === 0 || k.indexOf(q) === 0) return 4;
+      if (label.split(/\s+/).some(function (w) { return w.indexOf(q) === 0; })) return 3;
+      if (label.indexOf(q) !== -1) return 2;
+      return COMMANDS[k].menu.toLowerCase().indexOf(q) !== -1 ? 1 : 0;
+    }
+    menu.items = MENU_KEYS.filter(function (k) { return score(k) > 0; })
+      .sort(function (x, y) { return score(y) - score(x) || MENU_KEYS.indexOf(x) - MENU_KEYS.indexOf(y); });
+    if (!menu.items.length) return hideMenu();
+    menu.block = block; menu.index = Math.min(menu.index, menu.items.length - 1); menu.open = true;
+    menu.el.innerHTML = menu.items.map(function (k, i) {
+      return '<button type="button" role="option" data-i="' + i + '" aria-selected="' + (i === menu.index) + '">' + iconFor(k) +
+        "<span><b>" + esc(COMMANDS[k].label) + "</b><small>" + esc(COMMANDS[k].menu) + "</small></span></button>";
+    }).join("");
+    position(menu.el, block.getBoundingClientRect(), true);
+    menu.el.hidden = false;
+    var cur = menu.el.querySelector('[aria-selected="true"]');
+    if (cur) cur.scrollIntoView({ block: "nearest" });
+  }
+  function hideMenu() { menu.open = false; menu.el.hidden = true; menu.index = 0; }
+  function chooseMenu(i) {
+    var k = menu.items[i], block = menu.block;
+    hideMenu();
+    block.innerHTML = "<br>";
+    placeCaret(block, false);
+    runCommand(k);
+  }
+  function handleMenuKey(ev) {
+    if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+      menu.index = (menu.index + (ev.key === "ArrowDown" ? 1 : -1) + menu.items.length) % menu.items.length;
+      showMenu(menu.block, menu.block.textContent.slice(1));
+    } else if (ev.key === "Enter" || ev.key === "Tab") chooseMenu(menu.index);
+    else if (ev.key === "Escape") hideMenu();
+    else return false;
+    ev.preventDefault();
+    return true;
+  }
+  menu.el.addEventListener("mousedown", function (ev) {
+    var b = ev.target.closest("[data-i]");
+    if (b) { ev.preventDefault(); chooseMenu(+b.dataset.i); }
+  });
+  function checkSlash() {
+    var block = caretBlock();
+    if (block && block.nodeName === "P" && /^\/\S{0,20}$/.test(block.textContent)) showMenu(block, block.textContent.slice(1));
+    else if (menu.open) hideMenu();
+  }
+
+  // Position a popover under (or beside) a rect, inside the editor page.
+  function position(el, rect, below) {
+    var page = $("ed-visual-wrap").getBoundingClientRect();
+    el.style.left = Math.max(8, Math.min(rect.left - page.left, page.width - 330)) + "px";
+    el.style.top = (rect.bottom - page.top + 6) + "px";
+  }
+
+  // ---------- link popover (replaces the browser prompt) ----------
+  var linkBox = $("ed-linkbox"), linkInput = $("ed-link-url"), linkRange = null, linkEl = null;
+  function openLink(existing) {
+    var sel = window.getSelection();
+    if (!sel.rangeCount || !visual.contains(sel.anchorNode)) return;
+    linkRange = sel.getRangeAt(0).cloneRange();
+    linkEl = existing || closestIn(sel.anchorNode, ["A"]);
+    linkInput.value = linkEl ? linkEl.getAttribute("href") : "";
+    $("ed-link-remove").hidden = $("ed-link-open").hidden = !linkEl;
+    if (linkEl) $("ed-link-open").href = linkEl.href;
+    position(linkBox, (linkEl || linkRange).getBoundingClientRect());
+    linkBox.hidden = false;
+    linkInput.focus(); linkInput.select();
+  }
+  function closeLink(restore) {
+    linkBox.hidden = true;
+    if (restore && linkRange) { visual.focus(); var s = window.getSelection(); s.removeAllRanges(); s.addRange(linkRange); }
+  }
+  function applyLink() {
+    var url = linkInput.value.trim();
+    if (url && !/^([a-z][a-z0-9+.-]*:|\/|#|\.)/i.test(url)) url = "https://" + url;
+    closeLink(true);
+    if (!url) return;
+    if (linkEl) linkEl.setAttribute("href", url);
+    else if (linkRange.collapsed) document.execCommand("insertHTML", false, '<a href="' + esc(url) + '">' + esc(url) + "</a>");
+    else document.execCommand("createLink", false, url);
+    fromVisual(); updateState();
+  }
+  $("ed-link-apply").addEventListener("click", applyLink);
+  $("ed-link-remove").addEventListener("click", function () {
+    var a = linkEl; closeLink(false);
+    if (a) { while (a.firstChild) a.parentNode.insertBefore(a.firstChild, a); a.remove(); fromVisual(); }
+  });
+  linkInput.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter") { ev.preventDefault(); applyLink(); }
+    if (ev.key === "Escape") { ev.preventDefault(); closeLink(true); }
   });
 
   // ---------- images ----------
@@ -312,28 +523,46 @@
     if (w) a.push("width=" + w);
     return a.length ? "{" + a.join(" ") + "}" : "";
   }
-  $("ed-images").addEventListener("change", function (ev) {
-    Array.prototype.forEach.call(ev.target.files, function (f) {
-      var name = f.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
+  function addImages(files) {
+    Array.prototype.forEach.call(files, function (f) {
+      if (!/^image\//.test(f.type)) return;
+      var base = (f.name || "image.png").toLowerCase().replace(/[^a-z0-9.]+/g, "-"), name = base, n = 2;
+      while (images[name]) name = base.replace(/(\.[a-z0-9]+)?$/, "-" + n++ + "$1");
       images[name] = URL.createObjectURL(f);
       var snippet = "![Describe the image](" + name + ")" + placementAttrs();
       if (mode === "visual") insertBlockVisual(snippet); else insertSource("\n", snippet, "\n");
       if (!field("cover")) $("ed-cover").value = name;
     });
     $("ed-image-list").textContent = "Upload these images with your post: " + Object.keys(images).join(", ");
-    ev.target.value = "";
     validate();
+  }
+  $("ed-images").addEventListener("change", function (ev) { addImages(ev.target.files); ev.target.value = ""; });
+  // Drag images straight into the post; they land where they're dropped.
+  visual.addEventListener("dragover", function (ev) { if (ev.dataTransfer.types.indexOf("Files") !== -1) { ev.preventDefault(); visual.classList.add("is-dropping"); } });
+  visual.addEventListener("dragleave", function () { visual.classList.remove("is-dropping"); });
+  visual.addEventListener("drop", function (ev) {
+    visual.classList.remove("is-dropping");
+    if (!ev.dataTransfer.files.length) return;
+    ev.preventDefault();
+    var r = document.caretRangeFromPoint ? document.caretRangeFromPoint(ev.clientX, ev.clientY) : null;
+    if (!r && document.caretPositionFromPoint) { var p = document.caretPositionFromPoint(ev.clientX, ev.clientY); r = document.createRange(); r.setStart(p.offsetNode, p.offset); }
+    if (r) { var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+    addImages(ev.dataTransfer.files);
   });
-  // Click an image in the visual editor to change its placement, size or description.
+
+  // Click an image to change its placement, size or description; click a link to edit it.
   visual.addEventListener("click", function (ev) {
     if (selectedImg) selectedImg.classList.remove("is-selected");
     selectedImg = ev.target.nodeName === "IMG" ? ev.target : null;
     $("ed-img-tools").hidden = !selectedImg;
-    if (!selectedImg) return;
-    selectedImg.classList.add("is-selected");
-    $("ed-align").value = PLACEMENTS.find(function (p) { return selectedImg.classList.contains(p); }) || "";
-    $("ed-width").value = selectedImg.getAttribute("width") || "";
-    $("ed-alt").value = selectedImg.getAttribute("alt") || "";
+    if (selectedImg) {
+      selectedImg.classList.add("is-selected");
+      $("ed-align").value = PLACEMENTS.find(function (p) { return selectedImg.classList.contains(p); }) || "";
+      $("ed-width").value = selectedImg.getAttribute("width") || "";
+      $("ed-alt").value = selectedImg.getAttribute("alt") || "";
+    }
+    var a = closestIn(ev.target, ["A"]);
+    if (a && !has(a, "headerlink")) { ev.preventDefault(); openLink(a); }
   });
   function applyToImage() {
     if (!selectedImg) return;
@@ -345,14 +574,23 @@
   }
   ["ed-align", "ed-width", "ed-alt"].forEach(function (id) { $(id).addEventListener("input", applyToImage); });
 
-  // Paste plain text in the visual editor, so pasted documents don't bring their styling along.
+  // Paste: images become uploads; text arrives plain, so pasted documents don't bring their styling.
   visual.addEventListener("paste", function (ev) {
-    var text = (ev.clipboardData || window.clipboardData).getData("text/plain");
+    var data = ev.clipboardData || window.clipboardData;
+    if (data.files && data.files.length) { ev.preventDefault(); addImages(data.files); return; }
+    var text = data.getData("text/plain");
     if (!text) return;
     ev.preventDefault();
     document.execCommand("insertText", false, text);
   });
-  visual.addEventListener("input", fromVisual);
+  visual.addEventListener("input", function () {
+    if (!visual.firstElementChild && !visual.textContent) { visual.innerHTML = "<p><br></p>"; placeCaret(visual.firstChild, false); }
+    checkSlash(); fromVisual();
+  });
+  visual.addEventListener("blur", function () { setTimeout(function () { if (!menu.el.contains(document.activeElement)) hideMenu(); }, 150); });
+  document.addEventListener("mousedown", function (ev) {
+    if (!linkBox.hidden && !linkBox.contains(ev.target)) closeLink(false);
+  });
   source.addEventListener("input", fromSource);
   document.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { setMode(b.dataset.mode); }); });
 
@@ -378,6 +616,7 @@
   // ---------- start ----------
   var saved = null;
   try { saved = localStorage.getItem(STORE); } catch (e) { /* storage blocked */ }
+  document.execCommand("defaultParagraphSeparator", false, "p");
   load(saved || "date: " + today() + "\ndraft: true\n\n");
   visual.innerHTML = '<p class="editor__loading">Loading the editor (the first load takes a few seconds)…</p>';
   visual.contentEditable = "false";

@@ -6,9 +6,20 @@ Every `.md` file in this folder becomes a post on [positron3d.com/blog](https://
 
 Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html)**. It's a visual editor: you write directly on the post as it will look on the site.
 
-- The toolbar adds headings, bold, highlight, lists, callouts, tabs, tables and more.
-- **Add images** places them with text wrap. Click any image to change its placement, size or description.
-- The **Markdown** tab shows the raw text if you prefer it.
+- **Type `/`** on an empty line for the block menu: headings, lists, callouts, collapsibles, tabs, tables, code, images, videos and more. Keep typing to filter, then press Enter.
+- **Markdown shortcuts work as you type:** `## ` heading, `### ` subheading, `- ` list, `1. ` numbered list, `[] ` tasks, `> ` quote. `---` or ` ``` ` followed by Enter gives a divider or a code block.
+- **Images:** drag them in, paste them, or use the image button. Choose the placement (wrap left or right, centred, full width) and size first. Click an image to change its placement, size or description.
+- **Links:** select text and press Ctrl/⌘+K. Click a link to edit, open or remove it.
+- **The Markdown tab** shows the raw text if you prefer it.
+
+| Shortcut | Does |
+|---|---|
+| Ctrl/⌘ + B, I, E | Bold, italic, inline code |
+| Ctrl/⌘ + Shift + X, H | Strikethrough, highlight |
+| Ctrl/⌘ + K | Link |
+| Ctrl/⌘ + Alt + 2, 3, 0 | Heading, subheading, plain text |
+| Ctrl/⌘ + Shift + 8, 7, 9 | Bulleted list, numbered list, quote |
+| Ctrl/⌘ + Z, Shift + Z | Undo, redo |
 
 Press **Save .md**, then upload the `.md` and its images here (next step). Drafts autosave in your browser.
 

@@ -650,6 +650,38 @@ blog_body = page_hero("Blog", "News, build logs and deep dives from the Positron
 write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body))
 
 
+# Editor toolbar icons: Lucide 1.48.0 (ISC licence, lucide.dev), vendored so the page needs no icon font.
+EDITOR_ICONS = {
+    'undo': '<path d="M9 14 4 9l5-5" /> <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" />',
+    'redo': '<path d="m15 14 5-5-5-5" /> <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13" />',
+    'p': '<path d="M13 4v16" /> <path d="M17 4v16" /> <path d="M19 4H9.5a4.5 4.5 0 0 0 0 9H13" />',
+    'h2': '<path d="M4 12h8" /> <path d="M4 18V6" /> <path d="M12 18V6" /> <path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1" />',
+    'h3': '<path d="M4 12h8" /> <path d="M4 18V6" /> <path d="M12 18V6" /> <path d="M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2" /> <path d="M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2" />',
+    'bold': '<path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />',
+    'italic': '<line x1="19" x2="10" y1="4" y2="4" /> <line x1="14" x2="5" y1="20" y2="20" /> <line x1="15" x2="9" y1="4" y2="20" />',
+    'strike': '<path d="M16 4H9a3 3 0 0 0-2.83 4" /> <path d="M14 12a4 4 0 0 1 0 8H6" /> <line x1="4" x2="20" y1="12" y2="12" />',
+    'mark': '<path d="m9 11-6 6v3h9l3-3" /> <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />',
+    'code': '<path d="m16 18 6-6-6-6" /> <path d="m8 6-6 6 6 6" />',
+    'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />',
+    'ul': '<path d="M3 5h.01" /> <path d="M3 12h.01" /> <path d="M3 19h.01" /> <path d="M8 5h13" /> <path d="M8 12h13" /> <path d="M8 19h13" />',
+    'ol': '<path d="M11 5h10" /> <path d="M11 12h10" /> <path d="M11 19h10" /> <path d="M4 4h1v5" /> <path d="M4 9h2" /> <path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02" />',
+    'task': '<path d="M13 5h8" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="m3 17 2 2 4-4" /> <path d="m3 7 2 2 4-4" />',
+    'quote': '<path d="M17 5H3" /> <path d="M21 12H8" /> <path d="M21 19H8" /> <path d="M3 12v7" />',
+    'note': '<circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" />',
+    'tip': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" />',
+    'warning': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" />',
+    'details': '<path d="m7 15 5 5 5-5" /> <path d="m7 9 5-5 5 5" />',
+    'tabs': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M9 21V9" />',
+    'table': '<path d="M12 3v18" /> <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" />',
+    'fence': '<path d="m10 9-3 3 3 3" /> <path d="m14 15 3-3-3-3" /> <rect x="3" y="3" width="18" height="18" rx="2" />',
+    'image': '<path d="M16 5h6" /> <path d="M19 2v6" /> <path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /> <circle cx="9" cy="9" r="2" />',
+    'video': '<rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z" />',
+    'toc': '<path d="M8 5h13" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="M3 10a2 2 0 0 0 2 2h3" /> <path d="M3 5v12a2 2 0 0 0 2 2h3" />',
+    'hr': '<path d="M5 12h14" />',
+}
+def _icon(cmd):
+    return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + EDITOR_ICONS[cmd] + '</svg>'
+
 editor_body = '''  <section class="section section--tight editor">
     <div class="container">
       <p class="eyebrow">Positron Team</p>
@@ -677,24 +709,33 @@ editor_body = '''  <section class="section section--tight editor">
           <button type="button" data-mode="visual" aria-pressed="true">Visual</button><button type="button" data-mode="markdown" aria-pressed="false">Markdown</button>
         </div>
         <div class="editor__toolbar" role="toolbar" aria-label="Formatting">
-            <span class="editor__group"><button type="button" data-cmd="undo" title="Undo" aria-label="Undo">↶</button> <button type="button" data-cmd="redo" title="Redo" aria-label="Redo">↷</button></span>
-            <span class="editor__group"><button type="button" data-cmd="p" title="Paragraph" aria-label="Paragraph">Text</button> <button type="button" data-cmd="h2" title="Heading" aria-label="Heading">H2</button> <button type="button" data-cmd="h3" title="Subheading" aria-label="Subheading">H3</button></span>
-            <span class="editor__group"><button type="button" data-cmd="bold" title="Bold" aria-label="Bold"><b>B</b></button> <button type="button" data-cmd="italic" title="Italic" aria-label="Italic"><i>I</i></button> <button type="button" data-cmd="strike" title="Strikethrough" aria-label="Strikethrough"><s>S</s></button> <button type="button" data-cmd="mark" title="Highlight" aria-label="Highlight"><mark>Mark</mark></button> <button type="button" data-cmd="code" title="Inline code" aria-label="Inline code">&lt;/&gt;</button> <button type="button" data-cmd="link" title="Link" aria-label="Link">Link</button></span>
-            <span class="editor__group"><button type="button" data-cmd="ul" title="Bulleted list" aria-label="Bulleted list">• List</button> <button type="button" data-cmd="ol" title="Numbered list" aria-label="Numbered list">1. List</button> <button type="button" data-cmd="task" title="Task list" aria-label="Task list">☑ Tasks</button> <button type="button" data-cmd="quote" title="Blockquote" aria-label="Blockquote">❝ Quote</button></span>
-            <span class="editor__group"><button type="button" data-cmd="note" title="Note callout" aria-label="Note callout">Note</button> <button type="button" data-cmd="tip" title="Tip callout" aria-label="Tip callout">Tip</button> <button type="button" data-cmd="warning" title="Warning callout" aria-label="Warning callout">Warning</button> <button type="button" data-cmd="details" title="Collapsible section" aria-label="Collapsible section">Collapse</button> <button type="button" data-cmd="tabs" title="Tabbed content" aria-label="Tabbed content">Tabs</button></span>
-            <span class="editor__group"><button type="button" data-cmd="table" title="Table" aria-label="Table">Table</button> <button type="button" data-cmd="fence" title="Code block" aria-label="Code block">Code block</button> <button type="button" data-cmd="video" title="YouTube embed" aria-label="YouTube embed">Video</button> <button type="button" data-cmd="toc" title="Table of contents" aria-label="Table of contents">Contents</button> <button type="button" data-cmd="hr" title="Divider" aria-label="Divider">―</button></span>
+            <span class="editor__group"><button type="button" data-cmd="undo" aria-pressed="false">''' + _icon("undo") + '''</button><button type="button" data-cmd="redo" aria-pressed="false">''' + _icon("redo") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="p" aria-pressed="false">''' + _icon("p") + '''</button><button type="button" data-cmd="h2" aria-pressed="false">''' + _icon("h2") + '''</button><button type="button" data-cmd="h3" aria-pressed="false">''' + _icon("h3") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="bold" aria-pressed="false">''' + _icon("bold") + '''</button><button type="button" data-cmd="italic" aria-pressed="false">''' + _icon("italic") + '''</button><button type="button" data-cmd="strike" aria-pressed="false">''' + _icon("strike") + '''</button><button type="button" data-cmd="mark" aria-pressed="false">''' + _icon("mark") + '''</button><button type="button" data-cmd="code" aria-pressed="false">''' + _icon("code") + '''</button><button type="button" data-cmd="link" aria-pressed="false">''' + _icon("link") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="ul" aria-pressed="false">''' + _icon("ul") + '''</button><button type="button" data-cmd="ol" aria-pressed="false">''' + _icon("ol") + '''</button><button type="button" data-cmd="task" aria-pressed="false">''' + _icon("task") + '''</button><button type="button" data-cmd="quote" aria-pressed="false">''' + _icon("quote") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="note" aria-pressed="false">''' + _icon("note") + '''</button><button type="button" data-cmd="tip" aria-pressed="false">''' + _icon("tip") + '''</button><button type="button" data-cmd="warning" aria-pressed="false">''' + _icon("warning") + '''</button><button type="button" data-cmd="details" aria-pressed="false">''' + _icon("details") + '''</button><button type="button" data-cmd="tabs" aria-pressed="false">''' + _icon("tabs") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="table" aria-pressed="false">''' + _icon("table") + '''</button><button type="button" data-cmd="fence" aria-pressed="false">''' + _icon("fence") + '''</button><button type="button" data-cmd="image" aria-pressed="false">''' + _icon("image") + '''</button><button type="button" data-cmd="video" aria-pressed="false">''' + _icon("video") + '''</button><button type="button" data-cmd="toc" aria-pressed="false">''' + _icon("toc") + '''</button><button type="button" data-cmd="hr" aria-pressed="false">''' + _icon("hr") + '''</button></span>
         </div>
         <div class="editor__images">
-          <label class="btn btn--sm">Add images<input type="file" id="ed-images" accept="image/*" multiple hidden></label>
+          <input type="file" id="ed-images" accept="image/*" multiple hidden>
+          <span class="editor__hint">New images:</span>
           <label>Placement <select id="ed-align"><option value="right">Right, text wraps</option><option value="left">Left, text wraps</option><option value="center">Centred</option><option value="full">Full width</option><option value="wide">Extra wide</option><option value="">Inline</option></select></label>
           <label>Size <select id="ed-width"><option value="240">Small</option><option value="320" selected>Medium</option><option value="480">Large</option><option value="">Original</option></select></label>
           <span id="ed-img-tools" hidden><label>Description <input id="ed-alt" placeholder="What the image shows"></label> <em>Editing the selected image</em></span>
+          <span class="editor__hint editor__tip">Type <kbd>/</kbd> for blocks · <kbd>##</kbd> <kbd>-</kbd> <kbd>&gt;</kbd> then space to format · drag or paste images in</span>
         </div>
       </div>
       <div class="editor__page" id="ed-visual-wrap">
         <div class="post prose">
           <div id="ed-head" class="editor__head"></div>
           <div class="post-body editor__visual" id="ed-visual" aria-label="Post (visual editor)" spellcheck="true"></div>
+        </div>
+        <div class="editor__menu" id="ed-menu" role="listbox" aria-label="Insert a block" hidden></div>
+        <div class="editor__linkbox" id="ed-linkbox" hidden>
+          <input id="ed-link-url" placeholder="Paste or type a link" aria-label="Link address">
+          <button type="button" class="btn btn--sm" id="ed-link-apply">Apply</button>
+          <a class="btn btn--sm btn--ghost" id="ed-link-open" target="_blank" rel="noopener" hidden>Open</a>
+          <button type="button" class="btn btn--sm btn--ghost" id="ed-link-remove" hidden>Remove</button>
         </div>
       </div>
       <textarea id="ed-body" class="editor__source" spellcheck="true" aria-label="Post text (Markdown)" hidden></textarea>
