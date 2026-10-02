@@ -654,7 +654,7 @@ editor_body = '''  <section class="section section--tight editor">
     <div class="container">
       <p class="eyebrow">Positron Team</p>
       <h1>Blog editor</h1>
-      <p class="lead">Write a post with a live preview that matches the site. Save the <code>.md</code>, then upload it and its images to the <code>Blog/</code> folder on GitHub. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
+      <p class="lead">Write the post as it will look on the site. Save the <code>.md</code>, then upload it and its images to the <code>Blog/</code> folder on GitHub. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
       <div class="editor__actions">
         <button type="button" class="btn btn--sm btn--ghost" id="ed-new">New</button>
         <label class="btn btn--sm btn--ghost">Open .md<input type="file" id="ed-open" accept=".md,text/markdown" hidden></label>
@@ -663,33 +663,49 @@ editor_body = '''  <section class="section section--tight editor">
         <span class="editor__file" id="ed-filename"></span>
         <span class="editor__status" id="ed-status" role="status"></span>
       </div>
-      <div class="editor__grid">
-        <div class="editor__pane">
-          <div class="editor__fields">
-            <label>Title<input id="ed-title" required></label>
-            <label>Date<input id="ed-date" type="date" required></label>
-            <label>Author<input id="ed-author" required></label>
-            <label>Tags<input id="ed-tags" placeholder="positron, build log"></label>
-            <label class="editor__wide">Summary<input id="ed-summary" placeholder="One sentence for the blog page and link previews"></label>
-            <label>Cover image<input id="ed-cover" placeholder="cover.jpg"></label>
-            <label class="editor__check"><input type="checkbox" id="ed-draft"> Draft (not published)</label>
-          </div>
-          <div class="editor__toolbar" role="toolbar" aria-label="Formatting">
-            <button type="button" data-snippet="h2" title="Heading">H2</button> <button type="button" data-snippet="h3" title="Subheading">H3</button> <button type="button" data-snippet="bold" title="Bold"><b>B</b></button> <button type="button" data-snippet="italic" title="Italic"><i>I</i></button> <button type="button" data-snippet="strike" title="Strikethrough"><s>S</s></button> <button type="button" data-snippet="mark" title="Highlight">Mark</button> <button type="button" data-snippet="link" title="Link">Link</button> <button type="button" data-snippet="code" title="Inline code">&lt;/&gt;</button> <button type="button" data-snippet="quote" title="Blockquote">Quote</button> <button type="button" data-snippet="ul" title="Bulleted list">• List</button> <button type="button" data-snippet="ol" title="Numbered list">1. List</button> <button type="button" data-snippet="task" title="Task list">☑ Tasks</button> <button type="button" data-snippet="table" title="Table">Table</button> <button type="button" data-snippet="note" title="Note callout">Note</button> <button type="button" data-snippet="tip" title="Tip callout">Tip</button> <button type="button" data-snippet="warning" title="Warning callout">Warning</button> <button type="button" data-snippet="details" title="Collapsible section">Collapse</button> <button type="button" data-snippet="tabs" title="Tabbed content">Tabs</button> <button type="button" data-snippet="fence" title="Code block">Code block</button> <button type="button" data-snippet="video" title="YouTube embed">Video</button> <button type="button" data-snippet="toc" title="Table of contents">TOC</button> <button type="button" data-snippet="hr" title="Divider">―</button>
-            <span class="editor__img">
-              <select id="ed-align" aria-label="Image placement"><option value="right">Image right, text wraps</option><option value="left">Image left, text wraps</option><option value="center">Image centred</option><option value="full">Image full width</option><option value="wide">Image extra wide</option></select>
-              <label class="btn btn--sm">Add images<input type="file" id="ed-images" accept="image/*" multiple hidden></label>
-            </span>
-          </div>
-          <textarea id="ed-body" spellcheck="true" aria-label="Post text (Markdown)"></textarea>
-          <p class="editor__note" id="ed-image-list"></p>
-        </div>
-        <article class="editor__preview post prose" id="ed-preview" aria-label="Preview"></article>
+      <div class="editor__fields">
+        <label>Title<input id="ed-title" required></label>
+        <label>Date<input id="ed-date" type="date" required></label>
+        <label>Author<input id="ed-author" required></label>
+        <label>Tags<input id="ed-tags" placeholder="positron, build log"></label>
+        <label class="editor__wide">Summary<input id="ed-summary" placeholder="One sentence for the blog page and link previews"></label>
+        <label>Cover image<input id="ed-cover" placeholder="cover.jpg"></label>
+        <label class="editor__check"><input type="checkbox" id="ed-draft"> Draft (not published)</label>
       </div>
+      <div class="editor__bar">
+        <div class="editor__modes" role="group" aria-label="Editing mode">
+          <button type="button" data-mode="visual" aria-pressed="true">Visual</button><button type="button" data-mode="markdown" aria-pressed="false">Markdown</button>
+        </div>
+        <div class="editor__toolbar" role="toolbar" aria-label="Formatting">
+            <span class="editor__group"><button type="button" data-cmd="undo" title="Undo" aria-label="Undo">↶</button> <button type="button" data-cmd="redo" title="Redo" aria-label="Redo">↷</button></span>
+            <span class="editor__group"><button type="button" data-cmd="p" title="Paragraph" aria-label="Paragraph">Text</button> <button type="button" data-cmd="h2" title="Heading" aria-label="Heading">H2</button> <button type="button" data-cmd="h3" title="Subheading" aria-label="Subheading">H3</button></span>
+            <span class="editor__group"><button type="button" data-cmd="bold" title="Bold" aria-label="Bold"><b>B</b></button> <button type="button" data-cmd="italic" title="Italic" aria-label="Italic"><i>I</i></button> <button type="button" data-cmd="strike" title="Strikethrough" aria-label="Strikethrough"><s>S</s></button> <button type="button" data-cmd="mark" title="Highlight" aria-label="Highlight"><mark>Mark</mark></button> <button type="button" data-cmd="code" title="Inline code" aria-label="Inline code">&lt;/&gt;</button> <button type="button" data-cmd="link" title="Link" aria-label="Link">Link</button></span>
+            <span class="editor__group"><button type="button" data-cmd="ul" title="Bulleted list" aria-label="Bulleted list">• List</button> <button type="button" data-cmd="ol" title="Numbered list" aria-label="Numbered list">1. List</button> <button type="button" data-cmd="task" title="Task list" aria-label="Task list">☑ Tasks</button> <button type="button" data-cmd="quote" title="Blockquote" aria-label="Blockquote">❝ Quote</button></span>
+            <span class="editor__group"><button type="button" data-cmd="note" title="Note callout" aria-label="Note callout">Note</button> <button type="button" data-cmd="tip" title="Tip callout" aria-label="Tip callout">Tip</button> <button type="button" data-cmd="warning" title="Warning callout" aria-label="Warning callout">Warning</button> <button type="button" data-cmd="details" title="Collapsible section" aria-label="Collapsible section">Collapse</button> <button type="button" data-cmd="tabs" title="Tabbed content" aria-label="Tabbed content">Tabs</button></span>
+            <span class="editor__group"><button type="button" data-cmd="table" title="Table" aria-label="Table">Table</button> <button type="button" data-cmd="fence" title="Code block" aria-label="Code block">Code block</button> <button type="button" data-cmd="video" title="YouTube embed" aria-label="YouTube embed">Video</button> <button type="button" data-cmd="toc" title="Table of contents" aria-label="Table of contents">Contents</button> <button type="button" data-cmd="hr" title="Divider" aria-label="Divider">―</button></span>
+        </div>
+        <div class="editor__images">
+          <label class="btn btn--sm">Add images<input type="file" id="ed-images" accept="image/*" multiple hidden></label>
+          <label>Placement <select id="ed-align"><option value="right">Right, text wraps</option><option value="left">Left, text wraps</option><option value="center">Centred</option><option value="full">Full width</option><option value="wide">Extra wide</option><option value="">Inline</option></select></label>
+          <label>Size <select id="ed-width"><option value="240">Small</option><option value="320" selected>Medium</option><option value="480">Large</option><option value="">Original</option></select></label>
+          <span id="ed-img-tools" hidden><label>Description <input id="ed-alt" placeholder="What the image shows"></label> <em>Editing the selected image</em></span>
+        </div>
+      </div>
+      <div class="editor__page" id="ed-visual-wrap">
+        <div class="post prose">
+          <div id="ed-head" class="editor__head"></div>
+          <div class="post-body editor__visual" id="ed-visual" aria-label="Post (visual editor)" spellcheck="true"></div>
+        </div>
+      </div>
+      <textarea id="ed-body" class="editor__source" spellcheck="true" aria-label="Post text (Markdown)" hidden></textarea>
+      <p class="editor__note" id="ed-image-list"></p>
     </div>
   </section>'''
 write("blog-editor.html", page("blog", "Blog editor | Positron 3D", "Draft a Positron 3D blog post.", editor_body,
-      '  <meta name="robots" content="noindex">\n', '  <script src="assets/js/blog-editor.js"></script>\n'))
+      '  <meta name="robots" content="noindex">\n',
+      '  <script src="https://cdn.jsdelivr.net/npm/turndown@7.2.4/dist/turndown.js"></script>\n'
+      '  <script src="https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js"></script>\n'
+      '  <script src="assets/js/blog-editor.js"></script>\n'))
 
 # Remove pages of posts that were deleted, renamed or turned back into drafts.
 built = {"blog-%s.html" % p["slug"] for p in posts} | {"blog-editor.html"}

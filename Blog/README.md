@@ -4,7 +4,13 @@ Every `.md` file in this folder becomes a post on [positron3d.com/blog](https://
 
 ## The easy way: the blog editor
 
-Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html)**. Write with a live preview, add images, then press **Save .md**. Upload the `.md` and its images here (next step). Drafts autosave in your browser.
+Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html)**. It's a visual editor: you write directly on the post as it will look on the site.
+
+- The toolbar adds headings, bold, highlight, lists, callouts, tabs, tables and more.
+- **Add images** places them with text wrap. Click any image to change its placement, size or description.
+- The **Markdown** tab shows the raw text if you prefer it.
+
+Press **Save .md**, then upload the `.md` and its images here (next step). Drafts autosave in your browser.
 
 ## Publish a post
 

@@ -318,33 +318,48 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .post-body .tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
 .post-body .tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
 .post-body .tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6) { display: block; }
-/* Blog editor (blog-editor.html) */
+/* Blog editor (blog-editor.html): WYSIWYG page + Markdown source mode */
 .editor h1 { margin-bottom: .2em; }
 .editor .lead { margin-left: 0; max-width: none; }
 .editor__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0; }
-.editor__actions label { cursor: pointer; }
+.editor__actions label, .editor__images label.btn { cursor: pointer; }
 .editor__file { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; color: var(--muted); }
-.editor__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 26px; align-items: start; }
-.editor__pane { display: flex; flex-direction: column; gap: 12px; }
-.editor__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.editor__status { flex-basis: 100%; font-size: .85rem; color: var(--muted); }
+.editor__status.is-error { color: #ef4444; }
+.editor__fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 14px; margin-bottom: 18px; }
+.editor__fields label, .editor__images label:not(.btn) { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; font-weight: 600; color: var(--muted); }
+.editor__fields .editor__wide { grid-column: span 2; }
+.editor__fields .editor__check { flex-direction: row; align-items: center; gap: 8px; align-self: end; padding-bottom: 10px; }
 .editor__fields input:not([type=checkbox]) { width: 100%; min-width: 0; }
-.editor__fields label { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; font-weight: 600; color: var(--muted); }
-.editor__fields .editor__wide { grid-column: 1 / -1; }
-.editor__fields .editor__check { flex-direction: row; align-items: center; gap: 8px; }
 .editor input:not([type=checkbox]), .editor select, .editor textarea { font: inherit; font-size: .92rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; }
 .editor :is(input, select, textarea):focus { outline: none; border-color: var(--accent); }
-.editor__toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
-.editor__toolbar > button { font: inherit; font-size: .8rem; font-weight: 600; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
-.editor__toolbar > button:hover { border-color: var(--accent); color: var(--accent); }
-.editor__img { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.editor__img label { cursor: pointer; }
-.editor textarea { min-height: 60vh; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88rem; line-height: 1.6; }
-.editor__note, .editor__status { font-size: .85rem; margin: 0; }
-.editor__status { flex-basis: 100%; color: var(--muted); }
-.editor__status.is-error { color: #ef4444; }
-.editor__preview { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; max-height: 85vh; overflow: auto; position: sticky; top: 96px; }
-@media (max-width: 900px) { .editor__grid { grid-template-columns: 1fr; } .editor__preview { position: static; max-height: none; } }
-@media (max-width: 560px) { .editor__fields { grid-template-columns: minmax(0, 1fr); } .editor textarea { min-height: 50vh; } .editor__preview { padding: 18px; } }
+.editor__bar { position: sticky; top: 84px; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; }
+.editor__modes { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.editor__modes button { font: inherit; font-size: .82rem; font-weight: 700; color: var(--muted); background: none; border: 0; padding: 6px 14px; cursor: pointer; }
+.editor__modes button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.editor__toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+.editor__group { display: inline-flex; flex-wrap: wrap; gap: 4px; padding-right: 8px; border-right: 1px solid var(--border); }
+.editor__group:last-child { border-right: 0; }
+.editor__group button { font: inherit; font-size: .8rem; font-weight: 600; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
+.editor__group button:hover { border-color: var(--accent); color: var(--accent); }
+.editor__group mark { background: var(--accent); color: var(--accent-ink); border-radius: 3px; padding: 0 .2em; }
+.editor__images { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; width: 100%; }
+.editor__images label:not(.btn) { flex-direction: row; align-items: center; gap: 6px; }
+.editor__images select, .editor__images input { padding: 5px 8px; }
+.editor__images em { font-size: .8rem; color: var(--accent); }
+.editor__page { background: var(--bg); border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); padding: 40px 22px 60px; }
+.editor__page .prose { margin-inline: auto; }
+.editor__head { pointer-events: none; }
+.editor__visual { min-height: 50vh; outline: none; }
+.editor__visual:empty::before { content: "Start writing…"; color: var(--muted); }
+.editor__visual img { cursor: pointer; }
+.editor__visual img.is-selected { outline: 3px solid var(--accent); outline-offset: 3px; }
+.editor__loading { color: var(--muted); }
+.editor__source { display: block; width: 100%; min-height: 70vh; resize: vertical; border-radius: 0 0 var(--radius) var(--radius) !important; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important; font-size: .88rem !important; line-height: 1.6; }
+.editor__source[hidden] { display: none; }
+.editor__note { font-size: .85rem; margin: 10px 0 0; }
+@media (max-width: 900px) { .editor__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } .editor__bar { top: 74px; } }
+@media (max-width: 560px) { .editor__fields { grid-template-columns: minmax(0, 1fr); } .editor__fields .editor__wide { grid-column: auto; } .editor__page { padding: 22px 14px 40px; } .editor__bar { position: static; } .editor__group { border-right: 0; padding-right: 0; } }
 .post-body .video { position: relative; aspect-ratio: 16 / 9; margin: 1.5em 0; clear: both; }
 .post-body .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 12px; }
 .thanks-block { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 22px 26px; margin-bottom: 22px; }
