@@ -70,6 +70,7 @@ draft: true
 | Tabs | `=== "Tab name"` |
 | Strikethrough, highlight | `~~old~~`, `==new==` |
 | Table of contents | `[TOC]` on its own line |
+| Code with syntax highlighting | a fence with the language after it: ` ```ini ` (Klipper configs), ` ```gcode `, ` ```python `, ` ```bash `, ` ```c `, ` ```yaml ` |
 
 Files starting with `_` (like the template) and this README are never published.
 

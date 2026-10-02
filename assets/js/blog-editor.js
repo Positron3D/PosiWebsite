@@ -3,7 +3,7 @@
 (function () {
   "use strict";
   var PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
-  var PACKAGES = ["markdown==3.11", "pymdown-extensions==12.1"]; // keep in step with _build/requirements.txt
+  var PACKAGES = ["markdown==3.11", "pymdown-extensions==12.1", "Pygments==2.21.0"]; // keep in step with _build/requirements.txt
   var UPLOAD_URL = "https://github.com/Positron3D/PosiWebsite/upload/main/Blog";
   var STORE = "positron-blog-draft";
   var FIELDS = ["title", "date", "author", "summary", "cover", "tags"];
@@ -148,6 +148,18 @@
           copy.querySelectorAll(".footnote-backref").forEach(function (b) { b.remove(); });
           return "[^" + li.id.slice(3) + "]: " + inner(copy).trim();
         }).join("\n") + "\n\n";
+      }
+    },
+    // Pygments output: <div class="language-ini highlight"><pre><span></span><code>…spans…</code></pre></div>
+    highlighted: {
+      filter: function (n) { return n.nodeName === "DIV" && has(n, "highlight"); },
+      replacement: function (c, n) {
+        var m = /(?:^|\s)language-(\S+)/.exec(n.className), lang = m && m[1] !== "text" ? m[1] : "";
+        var src = (n.querySelector("code") || n).cloneNode(true);
+        src.querySelectorAll("br").forEach(function (br) { br.replaceWith("\n"); });
+        var code = src.textContent.replace(/\n$/, "");
+        var fence = /```/.test(code) ? "````" : "```";
+        return "\n\n" + fence + lang + "\n" + code + "\n" + fence + "\n\n";
       }
     },
     video: { filter: function (n) { return n.nodeName === "DIV" && has(n, "video"); }, replacement: function (c, n) { return "\n\n" + n.outerHTML + "\n\n"; } },
@@ -362,6 +374,16 @@
     b.addEventListener("click", function () { runCommand(b.dataset.cmd); });
   });
 
+  function insertNewlineInCode() {
+    var sel = window.getSelection(), r = sel.getRangeAt(0);
+    r.deleteContents();
+    var nl = document.createTextNode("\n");
+    r.insertNode(nl);
+    r.setStartAfter(nl); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+    fromVisual();
+  }
+
   // Toolbar dividers sit between groups on the same row; the first group of each wrapped row has none.
   var groups = Array.prototype.slice.call(document.querySelectorAll(".editor__group"));
   function markRows() {
@@ -378,6 +400,9 @@
   [visual, source].forEach(function (el) {
     el.addEventListener("keydown", function (ev) {
       if (menu.open && handleMenuKey(ev)) return;
+      if (el === visual && ev.key === "Enter" && !ev.shiftKey && closestIn(window.getSelection().anchorNode, ["PRE"])) {
+        ev.preventDefault(); insertNewlineInCode(); return; // keep code as real newline characters, not <br>
+      }
       var k = SHORTCUTS[comboOf(ev)];
       if (k && k !== "undo" && k !== "redo") { ev.preventDefault(); runCommand(k); }
       else if (el === visual) autoformat(ev);
