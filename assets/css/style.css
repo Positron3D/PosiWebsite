@@ -73,6 +73,7 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .btn--ghost { background: transparent; color: var(--text); border-color: var(--border); }
 .btn--ghost:hover { background: var(--surface-2); color: var(--text); border-color: var(--accent); }
 .btn--sm { padding: .55em 1.1em; font-size: .88rem; }
+.btn { line-height: inherit; } /* <button> doesn't inherit line-height by default; keep it the same height as <a class="btn"> */
 
 /* ---------- Header / nav ---------- */
 .site-header { position: sticky; top: 0; z-index: 50; padding: 14px 0; }
@@ -187,6 +188,7 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 
 /* split text + image */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.split > * { min-width: 0; } /* grid columns must not grow to fit wide content */
 .split img { border-radius: var(--radius); box-shadow: var(--shadow); }
 
 /* partners / logos
@@ -329,24 +331,26 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .editor__fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 14px; margin-bottom: 18px; }
 .editor__fields label, .editor__images label:not(.btn) { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; font-weight: 600; color: var(--muted); }
 .editor__fields .editor__wide { grid-column: span 2; }
-.editor__fields .editor__check { flex-direction: row; align-items: center; gap: 8px; align-self: end; padding-bottom: 10px; }
-.editor__fields input:not([type=checkbox]) { width: 100%; min-width: 0; }
+.editor__fields .editor__check { flex-direction: row; align-items: center; gap: 8px; align-self: end; height: 44px; } /* centred on the input beside it */
+.editor__fields input:not([type=checkbox]) { width: 100%; min-width: 0; height: 44px; } /* date inputs render taller without it */
 .editor input:not([type=checkbox]), .editor select, .editor textarea { font: inherit; font-size: .92rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; }
 .editor :is(input, select, textarea):focus { outline: none; border-color: var(--accent); }
 .editor__bar { position: sticky; top: 84px; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; }
 .editor__modes { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
-.editor__modes button { font: inherit; font-size: .82rem; font-weight: 700; color: var(--muted); background: none; border: 0; padding: 6px 14px; cursor: pointer; }
+.editor__modes button { font: inherit; font-size: .82rem; font-weight: 700; line-height: 1; height: 32px; color: var(--muted); background: none; border: 0; padding: 0 14px; cursor: pointer; }
 .editor__modes button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.editor__toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
-.editor__group { display: inline-flex; flex-wrap: wrap; gap: 4px; padding-right: 8px; border-right: 1px solid var(--border); }
-.editor__group:last-child { border-right: 0; }
+.editor__toolbar { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.editor__group { position: relative; display: inline-flex; flex-wrap: wrap; gap: 4px; }
+/* Dividers live in the gap and never affect layout, so blog-editor.js can hide them at row starts
+   (is-row-start) without re-wrapping the toolbar. */
+.editor__group:not(.is-row-start)::before { content: ""; position: absolute; left: -9px; top: 7px; bottom: 7px; width: 1px; background: var(--border); }
 .editor__group button { display: inline-grid; place-items: center; width: 34px; height: 34px; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; transition: color .15s, background .15s, border-color .15s; }
 .editor__group button:hover { color: var(--text); background: var(--surface-2); }
 .editor__group button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .editor__group button[aria-pressed="true"] { color: var(--accent); background: var(--surface-2); border-color: var(--border); }
-.editor__images { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; width: 100%; }
+.editor__images { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; width: 100%; }
 .editor__images label:not(.btn) { flex-direction: row; align-items: center; gap: 6px; }
-.editor__images select, .editor__images input { padding: 5px 8px; }
+.editor__images select, .editor__images input { height: 34px; padding: 0 8px; } /* same height as toolbar buttons and the mode switch */
 .editor__images em { font-size: .8rem; color: var(--accent); }
 .editor__hint { font-size: .8rem; color: var(--muted); }
 .editor__tip { margin-left: auto; }
@@ -386,7 +390,15 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .editor__source[hidden] { display: none; }
 .editor__note { font-size: .85rem; margin: 10px 0 0; }
 @media (max-width: 900px) { .editor__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } .editor__bar { top: 74px; } }
-@media (max-width: 560px) { .editor__tip { display: none; } .editor__menu { width: calc(100% - 16px); } .editor__fields { grid-template-columns: minmax(0, 1fr); } .editor__fields .editor__wide { grid-column: auto; } .editor__page { padding: 22px 14px 40px; } .editor__bar { position: static; } .editor__group { border-right: 0; padding-right: 0; } }
+@media (max-width: 560px) {
+  .editor__actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .editor__actions .btn { justify-content: center; }
+  .editor__actions .editor__file, .editor__actions .editor__status { grid-column: 1 / -1; }
+  .editor__images .editor__hint { flex-basis: 100%; }
+  .editor__images label:not(.btn) { flex: 1 1 100%; display: grid; grid-template-columns: 76px minmax(0, 1fr); } /* selects share one start edge */
+  .editor__images select { width: 100%; }
+}
+@media (max-width: 560px) { .editor__tip { display: none; } .editor__menu { width: calc(100% - 16px); } .editor__fields { grid-template-columns: minmax(0, 1fr); } .editor__fields .editor__wide { grid-column: auto; } .editor__page { padding: 22px 14px 40px; } .editor__bar { position: static; } }
 .post-body .video { position: relative; aspect-ratio: 16 / 9; margin: 1.5em 0; clear: both; }
 .post-body .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 12px; }
 .thanks-block { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 22px 26px; margin-bottom: 22px; }

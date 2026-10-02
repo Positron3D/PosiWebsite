@@ -226,7 +226,7 @@ home_body = '''  <section class="hero">
             <div class="feature"><div class="feature__icon">🔧</div><div><h4>Easily Repairable</h4><p>Most components are accessible within just a few screws, so almost any part can be replaced or repaired as needed.</p></div></div>
           </div>
         </div>
-        <div class="split__media center"><img src="assets/img/award.webp" alt="3D Printing Industry Awards 2024 — Nominated, Desktop FFF" style="max-width:340px;margin:0 auto"></div>
+        <div class="split__media center"><img src="assets/img/award.webp" alt="3D Printing Industry Awards 2024 — Nominated, Desktop FFF" style="max-width:min(340px, 100%);margin:0 auto"></div>
       </div>
     </div>
   </section>'''

@@ -362,6 +362,14 @@
     b.addEventListener("click", function () { runCommand(b.dataset.cmd); });
   });
 
+  // Toolbar dividers sit between groups on the same row; the first group of each wrapped row has none.
+  var groups = Array.prototype.slice.call(document.querySelectorAll(".editor__group"));
+  function markRows() {
+    groups.forEach(function (g, i) { g.classList.toggle("is-row-start", i === 0 || g.offsetTop !== groups[i - 1].offsetTop); });
+  }
+  if (window.ResizeObserver) new ResizeObserver(markRows).observe(document.querySelector(".editor__toolbar"));
+  markRows();
+
   // Keyboard shortcuts (both modes)
   function comboOf(ev) {
     var key = ev.code.replace(/^Key|^Digit/, "").toLowerCase();

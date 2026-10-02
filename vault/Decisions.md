@@ -9,6 +9,14 @@ tags: [positron, decisions]
 
 Newest first. One entry per styling or process call, with the reason.
 
+## 2026-10-01: Alignment rules from a measured audit
+
+- **`.btn { line-height: inherit }`:** `<button>` elements don't inherit line height, so `<button class="btn">` was 33 px while `<a class="btn">` was 41 px. All buttons now match.
+- **`.split > * { min-width: 0 }`, and images inside grids never get a fixed `max-width` larger than their column:** at 360 px the homepage award image (`max-width:340px`) grew its grid column past the screen.
+- **Editor controls share heights per row** (toolbar buttons, mode switch and dropdowns at 34 px; form fields at 44 px), and rows centre their items.
+- **Toolbar dividers are layout-neutral marks**, hidden at the start of each wrapped row. Hiding them by changing padding made the row re-wrap, then flip back, in a loop.
+- **Why:** checked by measuring every row, edge, height and overflow at 1440, 1280, 1024, 900, 768, 560, 412 and 360 px, not by eye.
+
 ## 2026-10-01: Blog built from a `Blog/` folder
 
 - Posts are Markdown files in `Blog/`, rendered at build time by `assets/py/blogmd.py` (Python-Markdown and pymdown-extensions, the site's first Python dependencies). The drafting app runs the same file in the browser through Pyodide.
