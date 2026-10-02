@@ -37,7 +37,7 @@ _build/build.py                Site generator (source of truth)
 _build/requirements.txt        Python deps for the blog (Markdown, pymdown-extensions): pip install -r
 Blog/*.md                      Blog posts (source). Built to blog.html + blog-<slug>.html; see Blog/README.md
 assets/py/blogmd.py            The one Markdown renderer, shared by the build and the blog editor
-blog-editor.html               Drafting app (generated; JS in assets/js/blog-editor.js)
+write-<token>.html             Blog editor at an unlisted URL (generated; name in build.py EDITOR_PAGE; JS in assets/js/blog-editor.js). Never link to it or put its URL in docs, issues or PRs
 _build/gallery.toml            Gallery content
 _build/preview.py              Local preview + screenshots
 vault/                         Obsidian vault: project knowledge base

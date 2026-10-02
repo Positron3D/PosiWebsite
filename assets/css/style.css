@@ -320,7 +320,7 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .post-body .tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
 .post-body .tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
 .post-body .tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6) { display: block; }
-/* Blog editor (blog-editor.html): WYSIWYG page + Markdown source mode */
+/* Blog editor (unlisted page, see EDITOR_PAGE in build.py): WYSIWYG page + Markdown source mode */
 .editor h1 { margin-bottom: .2em; }
 .editor .lead { margin-left: 0; max-width: none; }
 .editor__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0; }

@@ -1,5 +1,5 @@
 # ABOUTME: Renders one Blog/*.md post to HTML with the full Positron markdown feature set.
-# ABOUTME: Shared by _build/build.py (site build) and blog-editor.html (Pyodide live preview).
+# ABOUTME: Shared by _build/build.py (site build) and the blog editor page (Pyodide live preview).
 import datetime
 import re
 

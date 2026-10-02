@@ -6,7 +6,7 @@ Static site for [Positron 3D](https://positron3d.com), hosted on GitHub Pages.
 
 ## Blog
 
-Team members write posts in [`Blog/`](Blog/README.md), either directly as Markdown or with the drafting app at `/blog-editor.html`. A workflow rebuilds the pages on the PR. To build locally: `pip install -r _build/requirements.txt`, then `python _build/build.py`.
+Team members write posts in [`Blog/`](Blog/README.md), either directly as Markdown or with the team's unlisted visual editor (ask the team for the link). A workflow rebuilds the pages on the PR. To build locally: `pip install -r _build/requirements.txt`, then `python _build/build.py`.
 
 ## Quick start
 

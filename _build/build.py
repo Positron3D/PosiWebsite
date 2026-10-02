@@ -672,7 +672,7 @@ blog_body = page_hero("Blog", "News, build logs and deep dives from the Positron
       <div class="post-list">
 {cards}
       </div>
-      <p class="center blog-links"><a href="feed.xml">RSS feed</a> · <a href="blog-editor.html">Positron Team: write a post →</a></p>
+      <p class="center blog-links"><a href="feed.xml">RSS feed</a></p>
     </div>
   </section>'''
 write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body, FEED_LINK))
@@ -825,14 +825,18 @@ editor_body = '''  <section class="section section--tight editor">
       <p class="editor__note" id="ed-image-list"></p>
     </div>
   </section>'''
-write("blog-editor.html", page("blog", "Blog editor | Positron 3D", "Draft a Positron 3D blog post.", editor_body,
-      '  <meta name="robots" content="noindex">\n',
+# The editor lives at an unlisted URL: linked from nowhere on the site, noindex, and no-referrer so
+# following its links out doesn't leak the address. The repo is public, so this hides it from
+# visitors and search engines, not from someone reading the source. Change the name to rotate it.
+EDITOR_PAGE = "write-2dd844bf192f9cb1.html"
+write(EDITOR_PAGE, page("blog", "Blog editor | Positron 3D", "Draft a Positron 3D blog post.", editor_body,
+      '  <meta name="robots" content="noindex, nofollow">\n  <meta name="referrer" content="no-referrer">\n',
       '  <script src="https://cdn.jsdelivr.net/npm/turndown@7.2.4/dist/turndown.js"></script>\n'
       '  <script src="https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js"></script>\n'
       '  <script src="assets/js/blog-editor.js"></script>\n'))
 
 # Remove pages of posts that were deleted, renamed or turned back into drafts.
-built = {"blog-%s.html" % p["slug"] for p in posts} | {"blog-editor.html"}
+built = {"blog-%s.html" % p["slug"] for p in posts}
 for old in glob.glob(os.path.join(ROOT, "blog-*.html")):
     if os.path.basename(old) not in built:
         os.remove(old)
