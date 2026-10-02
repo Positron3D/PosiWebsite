@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Static site generator for Positron 3D.
 Run from anywhere: python _build/build.py  (writes pages to repo root)."""
-import os, sys, tomllib
+import os, re, sys, tomllib
 io = sys.stdout
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -10,6 +10,7 @@ NAV_ITEMS = [
     ("Our Printers ▾", "printers.html"),  # dropdown handled specially
     ("Documentation", "documentation.html"),
     ("Gallery", "gallery.html"),
+    ("Blog", "blog.html"),
     ("Merch", "https://nomadsgalaxy-shop.fourthwall.com"),
     ("Credits", "credits.html"),
     ("Contact", "contact.html"),
@@ -79,6 +80,7 @@ def footer(extra_scripts=""):
           <ul>
             <li><a href="documentation.html">Documentation</a></li>
             <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="blog.html">Blog</a></li>
             <li><a href="credits.html">Credits</a></li>
             <li><a href="https://nomadsgalaxy-shop.fourthwall.com" target="_blank" rel="noopener">Merch</a></li>
             <li><a href="contact.html">Contact</a></li>
@@ -224,7 +226,7 @@ home_body = '''  <section class="hero">
             <div class="feature"><div class="feature__icon">🔧</div><div><h4>Easily Repairable</h4><p>Most components are accessible within just a few screws, so almost any part can be replaced or repaired as needed.</p></div></div>
           </div>
         </div>
-        <div class="split__media center"><img src="assets/img/award.webp" alt="3D Printing Industry Awards 2024 — Nominated, Desktop FFF" style="max-width:340px;margin:0 auto"></div>
+        <div class="split__media center"><img src="assets/img/award.webp" alt="3D Printing Industry Awards 2024 — Nominated, Desktop FFF" style="max-width:min(340px, 100%);margin:0 auto"></div>
       </div>
     </div>
   </section>'''
@@ -570,5 +572,270 @@ gallery_scripts = '''  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.1
 write("gallery.html", page("gallery", "Gallery | Positron 3D",
       "Community builds, printer beauty shots, and project highlights from the Positron 3D community.",
       gallery_body, gallery_head, gallery_scripts))
+
+# ---------------------------------------------------------------- BLOG
+# Posts are Blog/*.md (front matter + markdown), rendered by assets/py/blogmd.py.
+# Output: blog.html (index) + blog-<slug>.html per post. `--drafts` also builds draft: true posts.
+import glob, html as _html
+sys.path.insert(0, os.path.join(ROOT, "assets", "py"))
+try:
+    import blogmd
+except ImportError:
+    sys.exit("The blog needs Python-Markdown: pip install -r _build/requirements.txt")
+
+def _esc(s): return _html.escape(s, quote=True)
+
+# Posts saved from the blog editor with images arrive as one .zip (post + images): unpack each
+# into its own folder, Blog/<date-slug>/, first.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import blogzip
+for zpath in sorted(glob.glob(os.path.join(ROOT, "Blog", "*.zip"))):
+    try:
+        folder, names = blogzip.unpack(zpath, os.path.join(ROOT, "Blog"))
+        io.write("unpacked %s into Blog/%s/: %s\n" % (os.path.basename(zpath), folder, ", ".join(names)))
+    except (blogzip.ZipError, OSError, ValueError) as e:
+        sys.exit("Blog/%s: %s" % (os.path.basename(zpath), e))
+
+# A post is either Blog/<date-slug>.md (text only) or a folder Blog/<date-slug>/ holding one .md and
+# its images. Names starting with "_" (and the README) are never published.
+sources = []
+for path in sorted(glob.glob(os.path.join(ROOT, "Blog", "*"))):
+    name = os.path.basename(path)
+    if name.startswith(("_", ".")) or name.upper() == "README.MD":
+        continue
+    if os.path.isdir(path):
+        mds = glob.glob(os.path.join(path, "*.md"))
+        if len(mds) != 1:
+            sys.exit("Blog/%s/: a post folder needs exactly one .md file, found %d" % (name, len(mds)))
+        sources.append((name, mds[0], "Blog/%s/" % name))
+    elif name.endswith(".md"):
+        sources.append((name[:-3], path, "Blog/"))
+
+posts = []
+for stem, path, prefix in sources:
+    label = os.path.relpath(path, ROOT)
+    with open(path, encoding="utf-8") as f:
+        try:
+            meta, body_html = blogmd.render(f.read(), src_prefix=prefix)
+        except blogmd.PostError as e:
+            sys.exit("%s: %s" % (label, e))
+    if meta["draft"] and "--drafts" not in sys.argv:
+        continue
+    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem).lower()
+    if not re.fullmatch(r"[a-z0-9-]+", slug):
+        sys.exit("%s: post names may only use a-z, 0-9 and dashes" % label)
+    if any(p["slug"] == slug for p in posts):
+        sys.exit("%s: another post already uses the slug %r" % (label, slug))
+    posts.append(dict(meta, slug=slug, body=body_html))
+posts.sort(key=lambda p: p["date_obj"], reverse=True)
+
+def _byline(p):
+    tags = "".join(f'<span class="tag">{_esc(t)}</span>' for t in p["tags"])
+    draft = '<span class="tag tag--draft">Draft</span>' if p["draft"] else ""
+    return (f'<p class="post-meta"><time datetime="{p["date"]}">{p["date_obj"]:%B} {p["date_obj"].day}, {p["date_obj"].year}</time>'
+            f' · {_esc(p["author"])} · {p["minutes"]} min read</p><p class="post-tags">{draft}{tags}</p>')
+
+SITE = "https://positron3d.com/"
+FEED_LINK = '  <link rel="alternate" type="application/rss+xml" title="Positron 3D Blog" href="feed.xml">\n'
+
+for p in posts:
+    cover = f'<img class="post-cover" src="{_esc(p["cover"])}" alt="">' if p.get("cover") else ""
+    og = f'  <meta property="og:image" content="https://positron3d.com/{_esc(p["cover"])}">\n' if p.get("cover") else ""
+    og += FEED_LINK
+    body = f'''  <article class="section post">
+    <div class="container prose">
+      <p class="eyebrow"><a href="blog.html">← Blog</a></p>
+      <h1>{_esc(p["title"])}</h1>
+      {_byline(p)}
+      {cover}
+      <div class="post-body">
+{p["body"]}
+      </div>
+    </div>
+  </article>'''
+    write("blog-%s.html" % p["slug"], page("blog", "%s | Positron 3D" % _esc(p["title"]),
+          _esc(p.get("summary", p["title"])), body, og))
+
+cards = "\n".join(f'''        <article class="card">
+          {f'<a class="card__media" href="blog-{p["slug"]}.html"><img src="{_esc(p["cover"])}" alt="" loading="lazy"></a>' if p.get("cover") else ""}
+          <div class="card__body">
+            <h3><a href="blog-{p["slug"]}.html">{_esc(p["title"])}</a></h3>
+            {_byline(p)}
+            <p>{_esc(p.get("summary", ""))}</p>
+            <a class="btn btn--sm" href="blog-{p["slug"]}.html">Read post</a>
+          </div>
+        </article>''' for p in posts) or '        <p class="lead center">No posts yet. Check back soon.</p>'
+blog_body = page_hero("Blog", "News, build logs and deep dives from the Positron Team.", "banner.jpg") + f'''
+
+  <section class="section">
+    <div class="container">
+      <div class="post-list">
+{cards}
+      </div>
+      <p class="center blog-links"><a href="feed.xml">RSS feed</a> · <a href="blog-editor.html">Positron Team: write a post →</a></p>
+    </div>
+  </section>'''
+write("blog.html", page("blog", "Blog | Positron 3D", "News, build logs and deep dives from the Positron Team.", blog_body, FEED_LINK))
+
+# RSS 2.0 feed of published posts (never drafts), with full content and absolute links for feed readers.
+from email.utils import format_datetime
+import datetime as _dt
+from urllib.parse import urljoin
+def _abs_url(u, base=SITE):
+    """Resolve a URL as the browser does on the post page (feed readers need absolute, normalised links)."""
+    return urljoin(base, u)
+def _absolute(html_text, base):
+    return re.sub(r'\b(src|href)="([^"]+)"', lambda m: '%s="%s"' % (m.group(1), _html.escape(_abs_url(_html.unescape(m.group(2)), base))), html_text)
+def _cdata(text):
+    return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
+def _rfc822(d):
+    return format_datetime(_dt.datetime(d.year, d.month, d.day, 12, tzinfo=_dt.timezone.utc))
+feed_items = []
+for p in [p for p in posts if not p["draft"]][:30]:
+    url = SITE + "blog-%s.html" % p["slug"]
+    cover = f'<img src="{_esc(p["cover"])}" alt="">' if p.get("cover") else ""
+    tags = "".join(f"\n      <category>{_esc(t)}</category>" for t in p["tags"])
+    enclosure = ""
+    if p.get("cover"):
+        cpath = os.path.normpath(os.path.join(ROOT, p["cover"]))
+        ctype = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".gif": "image/gif", ".avif": "image/avif"}.get(os.path.splitext(cpath)[1].lower())
+        if ctype and os.path.isfile(cpath):
+            enclosure = f'\n      <enclosure url="{_esc(_abs_url(p["cover"]))}" length="{os.path.getsize(cpath)}" type="{ctype}"/>'
+    feed_items.append(f'''    <item>
+      <title>{_esc(p["title"])}</title>
+      <link>{url}</link>
+      <guid isPermaLink="true">{url}</guid>
+      <pubDate>{_rfc822(p["date_obj"])}</pubDate>
+      <dc:creator>{_esc(p["author"])}</dc:creator>
+      <description>{_esc(p.get("summary", p["title"]))}</description>{tags}{enclosure}
+      <content:encoded>{_cdata(_absolute(cover + p["body"], url))}</content:encoded>
+    </item>''')
+latest = max([p["date_obj"] for p in posts if not p["draft"]], default=_dt.date(2026, 1, 1))
+feed = f'''<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Positron 3D Blog</title>
+    <link>{SITE}blog.html</link>
+    <description>News, build logs and deep dives from the Positron Team.</description>
+    <language>en</language>
+    <lastBuildDate>{_rfc822(latest)}</lastBuildDate>
+    <atom:link href="{SITE}feed.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>{SITE}assets/img/logo-icon.png</url>
+      <title>Positron 3D Blog</title>
+      <link>{SITE}blog.html</link>
+    </image>
+{chr(10).join(feed_items)}
+  </channel>
+</rss>
+'''
+write("feed.xml", feed)
+
+
+# Editor toolbar icons: Lucide 1.48.0 (ISC licence, lucide.dev), vendored so the page needs no icon font.
+EDITOR_ICONS = {
+    'undo': '<path d="M9 14 4 9l5-5" /> <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" />',
+    'redo': '<path d="m15 14 5-5-5-5" /> <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13" />',
+    'p': '<path d="M13 4v16" /> <path d="M17 4v16" /> <path d="M19 4H9.5a4.5 4.5 0 0 0 0 9H13" />',
+    'h2': '<path d="M4 12h8" /> <path d="M4 18V6" /> <path d="M12 18V6" /> <path d="M21 18h-4c0-4 4-3 4-6 0-1.5-2-2.5-4-1" />',
+    'h3': '<path d="M4 12h8" /> <path d="M4 18V6" /> <path d="M12 18V6" /> <path d="M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2" /> <path d="M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2" />',
+    'bold': '<path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8" />',
+    'italic': '<line x1="19" x2="10" y1="4" y2="4" /> <line x1="14" x2="5" y1="20" y2="20" /> <line x1="15" x2="9" y1="4" y2="20" />',
+    'strike': '<path d="M16 4H9a3 3 0 0 0-2.83 4" /> <path d="M14 12a4 4 0 0 1 0 8H6" /> <line x1="4" x2="20" y1="12" y2="12" />',
+    'mark': '<path d="m9 11-6 6v3h9l3-3" /> <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4" />',
+    'code': '<path d="m16 18 6-6-6-6" /> <path d="m8 6-6 6 6 6" />',
+    'link': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /> <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />',
+    'ul': '<path d="M3 5h.01" /> <path d="M3 12h.01" /> <path d="M3 19h.01" /> <path d="M8 5h13" /> <path d="M8 12h13" /> <path d="M8 19h13" />',
+    'ol': '<path d="M11 5h10" /> <path d="M11 12h10" /> <path d="M11 19h10" /> <path d="M4 4h1v5" /> <path d="M4 9h2" /> <path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02" />',
+    'task': '<path d="M13 5h8" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="m3 17 2 2 4-4" /> <path d="m3 7 2 2 4-4" />',
+    'quote': '<path d="M17 5H3" /> <path d="M21 12H8" /> <path d="M21 19H8" /> <path d="M3 12v7" />',
+    'note': '<circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" />',
+    'tip': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" /> <path d="M9 18h6" /> <path d="M10 22h4" />',
+    'warning': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" />',
+    'details': '<path d="m7 15 5 5 5-5" /> <path d="m7 9 5-5 5 5" />',
+    'tabs': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M9 21V9" />',
+    'table': '<path d="M12 3v18" /> <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" />',
+    'fence': '<path d="m10 9-3 3 3 3" /> <path d="m14 15 3-3-3-3" /> <rect x="3" y="3" width="18" height="18" rx="2" />',
+    'image': '<path d="M16 5h6" /> <path d="M19 2v6" /> <path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /> <circle cx="9" cy="9" r="2" />',
+    'video': '<rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z" />',
+    'toc': '<path d="M8 5h13" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="M3 10a2 2 0 0 0 2 2h3" /> <path d="M3 5v12a2 2 0 0 0 2 2h3" />',
+    'hr': '<path d="M5 12h14" />',
+}
+def _icon(cmd):
+    return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + EDITOR_ICONS[cmd] + '</svg>'
+
+editor_body = '''  <section class="section section--tight editor">
+    <div class="container">
+      <p class="eyebrow">Positron Team</p>
+      <h1>Blog editor</h1>
+      <p class="lead">Write the post as it will look on the site. <b>Save</b> gives you a <code>.md</code>, or a <code>.zip</code> with the post and all its images when it has any. Upload that file to the <code>Blog/</code> folder on GitHub; the site unpacks a zip into the post\'s own folder. <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/README.md" target="_blank" rel="noopener">How publishing works</a> · <a href="https://github.com/Positron3D/PosiWebsite/blob/main/Blog/_TEMPLATE.md" target="_blank" rel="noopener">Formatting reference</a></p>
+      <div class="editor__actions">
+        <button type="button" class="btn btn--sm btn--ghost" id="ed-new">New</button>
+        <label class="btn btn--sm btn--ghost">Open<input type="file" id="ed-open" accept=".md,.zip,text/markdown,application/zip" hidden></label>
+        <button type="button" class="btn btn--sm" id="ed-save">Save .md</button>
+        <a class="btn btn--sm btn--ghost" id="ed-upload" target="_blank" rel="noopener">Upload to GitHub</a>
+        <span class="editor__file" id="ed-filename"></span>
+        <span class="editor__status" id="ed-status" role="status"></span>
+      </div>
+      <div class="editor__fields">
+        <label>Title<input id="ed-title" required></label>
+        <label>Date<input id="ed-date" type="date" required></label>
+        <label>Author<input id="ed-author" required></label>
+        <label>Tags<input id="ed-tags" placeholder="positron, build log"></label>
+        <label class="editor__wide">Summary<input id="ed-summary" placeholder="One sentence for the blog page and link previews"></label>
+        <label>Cover image<input id="ed-cover" placeholder="cover.jpg"></label>
+        <label class="editor__check"><input type="checkbox" id="ed-draft"> Draft (not published)</label>
+      </div>
+      <div class="editor__bar">
+        <div class="editor__modes" role="group" aria-label="Editing mode">
+          <button type="button" data-mode="visual" aria-pressed="true">Visual</button><button type="button" data-mode="markdown" aria-pressed="false">Markdown</button>
+        </div>
+        <div class="editor__toolbar" role="toolbar" aria-label="Formatting">
+            <span class="editor__group"><button type="button" data-cmd="undo" aria-pressed="false">''' + _icon("undo") + '''</button><button type="button" data-cmd="redo" aria-pressed="false">''' + _icon("redo") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="p" aria-pressed="false">''' + _icon("p") + '''</button><button type="button" data-cmd="h2" aria-pressed="false">''' + _icon("h2") + '''</button><button type="button" data-cmd="h3" aria-pressed="false">''' + _icon("h3") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="bold" aria-pressed="false">''' + _icon("bold") + '''</button><button type="button" data-cmd="italic" aria-pressed="false">''' + _icon("italic") + '''</button><button type="button" data-cmd="strike" aria-pressed="false">''' + _icon("strike") + '''</button><button type="button" data-cmd="mark" aria-pressed="false">''' + _icon("mark") + '''</button><button type="button" data-cmd="code" aria-pressed="false">''' + _icon("code") + '''</button><button type="button" data-cmd="link" aria-pressed="false">''' + _icon("link") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="ul" aria-pressed="false">''' + _icon("ul") + '''</button><button type="button" data-cmd="ol" aria-pressed="false">''' + _icon("ol") + '''</button><button type="button" data-cmd="task" aria-pressed="false">''' + _icon("task") + '''</button><button type="button" data-cmd="quote" aria-pressed="false">''' + _icon("quote") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="note" aria-pressed="false">''' + _icon("note") + '''</button><button type="button" data-cmd="tip" aria-pressed="false">''' + _icon("tip") + '''</button><button type="button" data-cmd="warning" aria-pressed="false">''' + _icon("warning") + '''</button><button type="button" data-cmd="details" aria-pressed="false">''' + _icon("details") + '''</button><button type="button" data-cmd="tabs" aria-pressed="false">''' + _icon("tabs") + '''</button></span>
+            <span class="editor__group"><button type="button" data-cmd="table" aria-pressed="false">''' + _icon("table") + '''</button><button type="button" data-cmd="fence" aria-pressed="false">''' + _icon("fence") + '''</button><button type="button" data-cmd="image" aria-pressed="false">''' + _icon("image") + '''</button><button type="button" data-cmd="video" aria-pressed="false">''' + _icon("video") + '''</button><button type="button" data-cmd="toc" aria-pressed="false">''' + _icon("toc") + '''</button><button type="button" data-cmd="hr" aria-pressed="false">''' + _icon("hr") + '''</button></span>
+        </div>
+        <div class="editor__images">
+          <input type="file" id="ed-images" accept="image/*" multiple hidden>
+          <span class="editor__hint">New images:</span>
+          <label>Placement <select id="ed-align"><option value="right">Right, text wraps</option><option value="left">Left, text wraps</option><option value="center">Centred</option><option value="full">Full width</option><option value="wide">Extra wide</option><option value="">Inline</option></select></label>
+          <label>Size <select id="ed-width"><option value="240">Small</option><option value="320" selected>Medium</option><option value="480">Large</option><option value="">Original</option></select></label>
+          <span id="ed-img-tools" hidden><label>Description <input id="ed-alt" placeholder="What the image shows"></label> <em>Editing the selected image</em></span>
+          <span class="editor__hint editor__tip">Type <kbd>/</kbd> for blocks · <kbd>##</kbd> <kbd>-</kbd> <kbd>&gt;</kbd> then space to format · drag or paste images in</span>
+        </div>
+      </div>
+      <div class="editor__page" id="ed-visual-wrap">
+        <div class="post prose">
+          <div id="ed-head" class="editor__head"></div>
+          <div class="post-body editor__visual" id="ed-visual" aria-label="Post (visual editor)" spellcheck="true"></div>
+        </div>
+        <div class="editor__menu" id="ed-menu" role="listbox" aria-label="Insert a block" hidden></div>
+        <div class="editor__bubble" id="ed-bubble" role="toolbar" aria-label="Format selection" hidden><button type="button" data-cmd="bold" aria-pressed="false">''' + _icon("bold") + '''</button><button type="button" data-cmd="italic" aria-pressed="false">''' + _icon("italic") + '''</button><button type="button" data-cmd="strike" aria-pressed="false">''' + _icon("strike") + '''</button><button type="button" data-cmd="mark" aria-pressed="false">''' + _icon("mark") + '''</button><button type="button" data-cmd="code" aria-pressed="false">''' + _icon("code") + '''</button><button type="button" data-cmd="link" aria-pressed="false">''' + _icon("link") + '''</button><span class="editor__bubble-sep"></span><button type="button" data-cmd="h2" aria-pressed="false">''' + _icon("h2") + '''</button><button type="button" data-cmd="h3" aria-pressed="false">''' + _icon("h3") + '''</button><button type="button" data-cmd="quote" aria-pressed="false">''' + _icon("quote") + '''</button></div>
+        <div class="editor__linkbox" id="ed-linkbox" hidden>
+          <input id="ed-link-url" placeholder="Paste or type a link" aria-label="Link address">
+          <button type="button" class="btn btn--sm" id="ed-link-apply">Apply</button>
+          <a class="btn btn--sm btn--ghost" id="ed-link-open" target="_blank" rel="noopener" hidden>Open</a>
+          <button type="button" class="btn btn--sm btn--ghost" id="ed-link-remove" hidden>Remove</button>
+        </div>
+      </div>
+      <textarea id="ed-body" class="editor__source" spellcheck="true" aria-label="Post text (Markdown)" hidden></textarea>
+      <p class="editor__note" id="ed-image-list"></p>
+    </div>
+  </section>'''
+write("blog-editor.html", page("blog", "Blog editor | Positron 3D", "Draft a Positron 3D blog post.", editor_body,
+      '  <meta name="robots" content="noindex">\n',
+      '  <script src="https://cdn.jsdelivr.net/npm/turndown@7.2.4/dist/turndown.js"></script>\n'
+      '  <script src="https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.js"></script>\n'
+      '  <script src="assets/js/blog-editor.js"></script>\n'))
+
+# Remove pages of posts that were deleted, renamed or turned back into drafts.
+built = {"blog-%s.html" % p["slug"] for p in posts} | {"blog-editor.html"}
+for old in glob.glob(os.path.join(ROOT, "blog-*.html")):
+    if os.path.basename(old) not in built:
+        os.remove(old)
+        io.write("removed %s\n" % os.path.basename(old))
 
 io.write("Done.\n")

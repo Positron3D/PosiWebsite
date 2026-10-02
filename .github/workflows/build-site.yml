@@ -1,0 +1,45 @@
+# Rebuilds the generated pages on a PR branch, so posts uploaded to Blog/ through
+# GitHub's web UI publish without anyone running Python. Post zips from the blog editor
+# (Blog/*.zip: the .md plus its images) are unpacked here. Commits the result back to the PR.
+name: Build site
+
+on:
+  pull_request:
+    paths: ["Blog/**", "_build/**", "assets/py/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r _build/requirements.txt
+      - name: Check the blog renderer and zip unpacker
+        run: python assets/py/blogmd.py && python _build/blogzip.py
+      - name: Build
+        run: python _build/build.py
+      - name: Check the RSS feed is well-formed XML
+        run: python -c "import xml.etree.ElementTree as ET; ET.parse('feed.xml')"
+      - name: Commit regenerated pages and unpacked posts
+        run: |
+          git add -A -- '*.html' feed.xml Blog
+          if git diff --cached --quiet; then echo "Pages already up to date."; exit 0; fi
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "::error::Pages are out of date. PRs from forks can't be rebuilt automatically: run 'python _build/build.py' and push the result."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Rebuild site pages (and unpack uploaded post zips)"
+          git push

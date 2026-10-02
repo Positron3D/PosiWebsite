@@ -17,3 +17,6 @@ _preview/
 vault/.obsidian/workspace*.json
 vault/.obsidian/cache
 vault/.trash/
+
+# Local Python env for _build (pip install -r _build/requirements.txt)
+.venv/

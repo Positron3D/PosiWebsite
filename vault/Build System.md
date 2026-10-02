@@ -11,6 +11,10 @@ tags: [positron, build]
 - **It is the source of truth.** Edit `build.py`, rebuild, and commit both.
 - **Parity check:** `python _build/build.py && git status` must show only the changes you intended.
 
+## Blog
+
+`build.py` also renders `Blog/*.md`, which needs `pip install -r _build/requirements.txt`. Use `--drafts` to include draft posts locally. See [[Blog]].
+
 ## Why the parity check exists
 
 On 2026-05-27 the "update our sponsors" commit changed only `index.html`: it swapped PrintedSolid for Siraya and EIBOS and moved the partners section above the cards. `build.py` still had the old list, so the next rebuild would have silently reverted the sponsors. The two were re-synced on 2026-09-29, and a clean rebuild now reproduces `index.html` exactly.
