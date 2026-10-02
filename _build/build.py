@@ -633,7 +633,8 @@ for stem, path, prefix in sources:
     if meta["draft"] and "--drafts" not in sys.argv:
         io.write("draft, not published: %s (remove 'draft: true' to publish)\n" % label)
         continue
-    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem).lower()
+    # Browsers save a second download as "name (1).md"; that suffix isn't part of the post's name.
+    slug = re.sub(r"^\d{4}-\d{2}-\d{2}-|\s*\(\d+\)$", "", stem).lower()
     if not re.fullmatch(r"[a-z0-9-]+", slug):
         problem("%s: post names may only use a-z, 0-9 and dashes" % label)
         continue
