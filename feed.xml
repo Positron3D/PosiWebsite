@@ -5,13 +5,22 @@
     <link>https://positron3d.com/blog.html</link>
     <description>News, build logs and deep dives from the Positron Team.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 01 Jan 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 01 Oct 2026 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://positron3d.com/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://positron3d.com/assets/img/logo-icon.png</url>
       <title>Positron 3D Blog</title>
       <link>https://positron3d.com/blog.html</link>
     </image>
-
+    <item>
+      <title>test123</title>
+      <link>https://positron3d.com/blog-test123.html</link>
+      <guid isPermaLink="true">https://positron3d.com/blog-test123.html</guid>
+      <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
+      <dc:creator>Birb</dc:creator>
+      <description>Test13133</description>
+      <category>Positron</category>
+      <content:encoded><![CDATA[<p>test121331</p>]]></content:encoded>
+    </item>
   </channel>
 </rss>
