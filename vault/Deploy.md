@@ -8,7 +8,8 @@ tags: [positron, deploy, cloudflare]
 # Deploy
 
 - **positron3d.com is served by the Cloudflare Worker `posiwebsite`** (Workers Builds, static-assets only, config in `wrangler.jsonc`). Every change to `main` triggers a build, which takes about a minute. There's no build step: the repo root is uploaded as-is, minus the paths in `.assetsignore`.
-- `.github/workflows/deploy.yml` also publishes to **GitHub Pages** on every push, but the domain points at Cloudflare.
+- **The deploy builds the site:** `wrangler.jsonc` `build.command` runs `pip install -r _build/requirements.txt && python _build/build.py --lenient` before uploading assets (Workers Builds has Python 3.13). A post uploaded straight to `main` therefore still publishes. `--lenient` logs and skips a broken post instead of failing the whole deploy. Confirmed with `wrangler deploy --dry-run` on 2026-10-02.
+- **GitHub Pages was removed on 2026-10-02.** The repo became private, and Pages needs a paid plan for private repos; the workflow had started failing.
 - `.assetsignore` keeps internal files off the live site: `.git`, `.github`, `wrangler.jsonc`, the docs, `_build/`, `_preview/` and `vault/`.
 
 ## Checking the live site

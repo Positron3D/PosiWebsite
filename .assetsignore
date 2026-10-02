@@ -17,3 +17,5 @@ vault/**
 Blog/*.md
 Blog/*/*.md
 Blog/*.zip
+**/__pycache__
+**/__pycache__/**

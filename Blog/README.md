@@ -32,7 +32,9 @@ Press **Save**. A text-only post downloads as a `.md`. A post with images downlo
 1. On GitHub, open this `Blog/` folder and choose **Add file → Upload files**.
 2. Drag in your `.zip` (or `.md`). Don't unzip it: the site does that, putting the post and its images into their own folder, `Blog/YYYY-MM-DD-short-title/`.
 3. Choose **Create a new branch** and **Propose changes**, then open the pull request.
-4. A bot rebuilds the site pages on your branch within a minute or two. Once a reviewer approves and merges, the post goes live.
+4. A bot rebuilds the site pages on your branch within a minute or two. Once a reviewer approves and merges, the post goes live. (If you commit straight to `main` instead, the post still publishes: the site rebuilds itself on every deploy. A PR lets someone review it first, though.)
+
+**Not showing up?** Check the header for `draft: true`. Drafts are uploaded but never published; delete that line, or untick **Draft** in the editor, and upload again.
 
 ## File names and the header
 
