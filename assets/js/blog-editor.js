@@ -399,7 +399,7 @@
       if (el.textContent.replace(/\u200b/g, "") === "" && !el.contains(at)) el.remove();
     });
   }
-  document.addEventListener("selectionchange", function () { if (mode === "visual") { cleanEmptyFormats(); updateState(); } });
+  document.addEventListener("selectionchange", function () { if (mode === "visual") { cleanEmptyFormats(); updateState(); } updateBubble(); });
 
   // Markdown-style autoformat at the start of a paragraph: "## " heading, "- " list, "> " quote,
   // "1. " numbered, "[] " tasks; "---" or "```" then Enter for a divider or code block.
@@ -479,6 +479,31 @@
     el.style.top = (rect.bottom - page.top + 6) + "px";
   }
 
+  // ---------- floating selection toolbar (bold, italic, …, link, headings, quote) ----------
+  // Its buttons carry data-cmd, so they share the toolbar's commands, shortcuts and active states.
+  var bubble = $("ed-bubble"), dragging = false, TOUCH = window.matchMedia("(pointer: coarse)").matches;
+  function updateBubble() {
+    var sel = window.getSelection();
+    var show = mode === "visual" && !dragging && linkBox.hidden && sel.rangeCount && !sel.isCollapsed &&
+      visual.contains(sel.anchorNode) && visual.contains(sel.focusNode) && sel.toString().trim() &&
+      !closestIn(sel.anchorNode, ["PRE"]);
+    if (!show) { bubble.hidden = true; return; }
+    var rect = sel.getRangeAt(0).getBoundingClientRect(), page = $("ed-visual-wrap").getBoundingClientRect();
+    bubble.hidden = false;
+    var w = bubble.offsetWidth, h = bubble.offsetHeight;
+    var left = Math.max(8, Math.min(rect.left + rect.width / 2 - w / 2 - page.left, page.width - w - 8));
+    var bar = document.querySelector(".editor__bar").getBoundingClientRect();
+    // Above the selection, clear of the sticky header and editor bar; below it on touch screens,
+    // where the phone's own copy/paste menu sits above.
+    var above = !TOUCH && rect.top - h - 10 > Math.max(90, bar.bottom);
+    bubble.style.left = left + "px";
+    bubble.style.top = (above ? rect.top - page.top - h - 10 : rect.bottom - page.top + 10) + "px";
+    bubble.classList.toggle("is-below", !above);
+  }
+  visual.addEventListener("mousedown", function () { dragging = true; bubble.hidden = true; });
+  document.addEventListener("mouseup", function () { if (dragging) { dragging = false; setTimeout(updateBubble, 0); } });
+  window.addEventListener("scroll", function () { if (!bubble.hidden) updateBubble(); }, { passive: true });
+
   // ---------- link popover (replaces the browser prompt) ----------
   var linkBox = $("ed-linkbox"), linkInput = $("ed-link-url"), linkRange = null, linkEl = null;
   function openLink(existing) {
@@ -490,7 +515,7 @@
     $("ed-link-remove").hidden = $("ed-link-open").hidden = !linkEl;
     if (linkEl) $("ed-link-open").href = linkEl.href;
     position(linkBox, (linkEl || linkRange).getBoundingClientRect());
-    linkBox.hidden = false;
+    linkBox.hidden = false; bubble.hidden = true;
     linkInput.focus(); linkInput.select();
   }
   function closeLink(restore) {

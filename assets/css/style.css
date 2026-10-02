@@ -362,6 +362,16 @@ p  { margin: 0 0 1rem; color: var(--muted); }
 .editor__menu button[aria-selected="true"], .editor__menu button:hover { background: var(--surface-2); }
 .editor__menu b { display: block; font-size: .9rem; font-weight: 600; }
 .editor__menu small { display: block; font-size: .78rem; color: var(--muted); }
+.editor__visual ::selection { background: rgba(255, 157, 18, .32); color: inherit; } /* amber-tinted selection, not browser blue */
+/* Floating selection toolbar */
+.editor__bubble { position: absolute; z-index: 25; display: flex; align-items: center; gap: 2px; padding: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+.editor__bubble::after { content: ""; position: absolute; left: calc(50% - 6px); bottom: -7px; width: 12px; height: 12px; background: var(--surface); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transform: rotate(45deg); }
+.editor__bubble.is-below::after { bottom: auto; top: -7px; transform: rotate(225deg); }
+.editor__bubble button { display: inline-grid; place-items: center; width: 32px; height: 32px; color: var(--muted); background: none; border: 0; border-radius: 8px; cursor: pointer; }
+.editor__bubble button:hover { color: var(--text); background: var(--surface-2); }
+.editor__bubble button[aria-pressed="true"] { color: var(--accent); background: var(--surface-2); }
+.editor__bubble button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.editor__bubble-sep { width: 1px; height: 20px; margin: 0 4px; background: var(--border); }
 .editor__linkbox { display: flex; gap: 6px; align-items: center; padding: 8px; width: min(420px, calc(100% - 16px)); }
 .editor__linkbox input { flex: 1; min-width: 0; padding: 6px 10px !important; }
 .editor__page { background: var(--bg); border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); padding: 40px 22px 60px; }

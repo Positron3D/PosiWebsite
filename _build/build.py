@@ -755,6 +755,7 @@ editor_body = '''  <section class="section section--tight editor">
           <div class="post-body editor__visual" id="ed-visual" aria-label="Post (visual editor)" spellcheck="true"></div>
         </div>
         <div class="editor__menu" id="ed-menu" role="listbox" aria-label="Insert a block" hidden></div>
+        <div class="editor__bubble" id="ed-bubble" role="toolbar" aria-label="Format selection" hidden><button type="button" data-cmd="bold" aria-pressed="false">''' + _icon("bold") + '''</button><button type="button" data-cmd="italic" aria-pressed="false">''' + _icon("italic") + '''</button><button type="button" data-cmd="strike" aria-pressed="false">''' + _icon("strike") + '''</button><button type="button" data-cmd="mark" aria-pressed="false">''' + _icon("mark") + '''</button><button type="button" data-cmd="code" aria-pressed="false">''' + _icon("code") + '''</button><button type="button" data-cmd="link" aria-pressed="false">''' + _icon("link") + '''</button><span class="editor__bubble-sep"></span><button type="button" data-cmd="h2" aria-pressed="false">''' + _icon("h2") + '''</button><button type="button" data-cmd="h3" aria-pressed="false">''' + _icon("h3") + '''</button><button type="button" data-cmd="quote" aria-pressed="false">''' + _icon("quote") + '''</button></div>
         <div class="editor__linkbox" id="ed-linkbox" hidden>
           <input id="ed-link-url" placeholder="Paste or type a link" aria-label="Link address">
           <button type="button" class="btn btn--sm" id="ed-link-apply">Apply</button>

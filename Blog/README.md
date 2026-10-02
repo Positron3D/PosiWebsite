@@ -12,6 +12,7 @@ Open **[positron3d.com/blog-editor.html](https://positron3d.com/blog-editor.html
 - **Type `/`** on an empty line for the block menu: headings, lists, callouts, collapsibles, tabs, tables, code, images, videos and more. Keep typing to filter, then press Enter.
 - **Markdown shortcuts work as you type:** `## ` heading, `### ` subheading, `- ` list, `1. ` numbered list, `[] ` tasks, `> ` quote. `---` or ` ``` ` followed by Enter gives a divider or a code block.
 - **Images:** drag them in, paste them, or use the image button. Choose the placement (wrap left or right, centred, full width) and size first. Click an image to change its placement, size or description.
+- **Select any text** and a floating toolbar appears with bold, italic, strikethrough, highlight, code, link, headings and quote.
 - **Links:** select text and press Ctrl/⌘+K. Click a link to edit, open or remove it.
 - **The Markdown tab** shows the raw text if you prefer it.
 
