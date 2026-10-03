@@ -99,7 +99,7 @@ This rule is also written as a comment above `.logo-card__chip` in `assets/css/s
 |---|---|---|
 | Logo with its own solid background | Set that exact colour on the chip: `style="--chip-bg:#hex"`, so chip and logo read as one tile. Sample the colour from the logo's edge pixels. | LDO `#35669a` · SendCutSend `#cc2127` · EIBOS `#fff` |
 | Partner with a brand manual | Use the manual's **approved** logo/background pairing and **official** logo files, not a recolour. | Prusa: official **white** logo on Prusa Orange `#fd5000` |
-| Transparent logo | Prepare it to read on the dark default chip (`--surface-2` `#1e232b`), e.g. recolour black text to white while keeping brand colours. | Numakers (white-text variant) · Siraya |
+| Transparent logo | Prepare it to read on the dark default chip (`--surface-2` `#1e232b`), e.g. recolour black text to white while keeping brand colours. | Siraya · KB3D |
 
 Then, for every logo:
 
@@ -110,7 +110,7 @@ Then, for every logo:
 ### 4.2 Links
 
 - Use the partner's **affiliate link** when there is one. The current links are in `vault/Partners.md`, which is the list to keep up to date.
-- Card title format: `Partner Name - What They Make` (e.g. `Numakers - Filaments`).
+- Card title format: `Partner Name - What They Make` (e.g. `EIBOS3D - Filament Dryers`).
 - External links always use `target="_blank" rel="noopener"`.
 
 ### 4.3 Checklist for a new partner
