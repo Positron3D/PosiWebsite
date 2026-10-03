@@ -1,13 +1,17 @@
 ---
 type: log
 title: Decisions
-updated: 2026-09-29
+updated: 2026-10-02
 tags: [positron, decisions]
 ---
 
 # Decisions
 
 Newest first. One entry per styling or process call, with the reason.
+
+## 2026-10-02: Numakers removed from the partners
+
+- Numakers is no longer a project partner: its card and `partner-numakers.webp` are gone. The six remaining partners show as a row of four with two centred below on desktop.
 
 ## 2026-10-02: Build the site at deploy time; new posts aren't drafts by default
 

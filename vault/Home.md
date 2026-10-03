@@ -22,5 +22,4 @@ Project knowledge for the **positron3d.com** site (this repo). Rules for making 
 
 ## Open items
 
-- The Numakers affiliate link is still to come (currently plain `https://numakers.com`).
-- Siraya and Numakers use the dark default chip. They could get brand-colour chips if their brand guidelines allow.
+- Siraya uses the dark default chip. It could get a brand-colour chip if its brand guidelines allow.

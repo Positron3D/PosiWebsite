@@ -16,7 +16,7 @@ tags: [positron, design, partners]
 
 1. **Logo ships on a solid colour:** set the chip to that colour, sampled from the logo's edge pixels (`magick logo.png -format '%[pixel:p{1,1}]' info:`). Examples: LDO, SendCutSend, EIBOS.
 2. **Partner has a brand manual:** use its approved pairing and official files. Prusa: white logo on `#fd5000`; the manual allows black or white logos only, and shows white on full orange. See [[Brand/Prusa]].
-3. **Transparent logo:** make sure it reads on `#1e232b`. Recolour black text to white while keeping brand colours, e.g. `magick in.png -channel RGB -fx "saturation<0.35 ? 1 : u" +channel out.webp` (used for Numakers).
+3. **Transparent logo:** make sure it reads on `#1e232b`. Recolour black text to white while keeping brand colours, e.g. `magick in.png -channel RGB -fx "saturation<0.35 ? 1 : u" +channel out.webp`.
 
 ## Prep recipes (ImageMagick)
 
