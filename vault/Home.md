@@ -22,4 +22,4 @@ Project knowledge for the **positron3d.com** site (this repo). Rules for making 
 
 ## Open items
 
-- Siraya uses the dark default chip. It could get a brand-colour chip if its brand guidelines allow.
+- Siraya and Numakers use the dark default chip. They could get brand-colour chips if their brand guidelines allow.
