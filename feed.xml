@@ -5,13 +5,39 @@
     <link>https://positron3d.com/blog.html</link>
     <description>News, build logs and deep dives from the Positron Team.</description>
     <language>en</language>
-    <lastBuildDate>Thu, 01 Jan 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 08 Oct 2026 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://positron3d.com/feed.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://positron3d.com/assets/img/logo-icon.png</url>
       <title>Positron 3D Blog</title>
       <link>https://positron3d.com/blog.html</link>
     </image>
-
+    <item>
+      <title>The Future of Positron V3.2, the Positron Design, and Additional Shenanigans</title>
+      <link>https://positron3d.com/blog-the-future-of-positron-v3-2-the-positron-design-and-additional-shenanigans.html</link>
+      <guid isPermaLink="true">https://positron3d.com/blog-the-future-of-positron-v3-2-the-positron-design-and-additional-shenanigans.html</guid>
+      <pubDate>Thu, 08 Oct 2026 12:00:00 +0000</pubDate>
+      <dc:creator>Birb</dc:creator>
+      <description>The Future of Positron V3.2, the Positron Design, and Additional Shenanigans</description>
+      <category>positron</category>
+      <content:encoded><![CDATA[<p>Hello everyone,</p>
+<p>This is an overall update on what we’ve been up to as a design group.</p>
+<p>Over the last year, we’ve found it frustrating that we had no good way to communicate openly with the community. That’s why we’ve added this blog. It matters even more because many of our projects move slowly. We’re a small team, and progress takes time.</p>
+<p>With that, here’s what we’re currently working on:</p>
+<p>Current Projects:</p>
+<p><strong>Positron V3.2 toolhead refresh and Positron V3.3</strong></p>
+<p><strong>Positron V3.9:</strong> a test bed Positron design packed with features we’d like to see on a Positron V4</p>
+<p><strong>Positron Power Board:</strong> a power switching board for the Positron design, and more</p>
+<p><strong>Prusa Mini Nextruder:</strong> adapting a Nextruder to the Prusa Mini, in collaboration with Prusa</p>
+<p><strong>Strangelove Board:</strong> a drop-in Klipper replacement for the Nextruder Loveboard</p>
+<p><strong>What About Prusawire?</strong></p>
+<p>Prusawire isn’t in active development after the R1 release, but we’ll continue to support it going forward.</p>
+<p><strong>What About Proton?</strong></p>
+<p>Proton currently on the backburner, we plan on finishing it at some point, however this will be after our current projects.</p>
+<p><strong>What’s Next</strong></p>
+<p>We’ll be posting more detailed blogs on each of these projects in the coming weeks. We apologize for the lack of updates, but rest assured, we are doing things!</p>
+<p><img alt="Prusa Mini Nextruder" src="https://positron3d.com/Blog/2026-10-08-the-future-of-positron-v3-2-the-positron-design-and-additional-shenanigans/prusa-mini-nextruder.jpg" width="240" /></p>
+<p><img alt="Positron V3.9" src="https://positron3d.com/Blog/2026-10-08-the-future-of-positron-v3-2-the-positron-design-and-additional-shenanigans/positron-v3-9.jpg" width="240" /></p>]]></content:encoded>
+    </item>
   </channel>
 </rss>
