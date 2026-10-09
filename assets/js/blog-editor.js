@@ -220,6 +220,7 @@
 
   function renderVisual() {
     if (!py) return;
+    selectImage(null);
     try { visual.innerHTML = withBlobs(pyRender(compose()).html); }
     catch (e) { visual.innerHTML = withBlobs(renderBody(md)); }
     validate();
@@ -625,29 +626,52 @@
     addImages(ev.dataTransfer.files);
   });
 
-  // Click an image to change its placement, size or description; click a link to edit it.
+  // Click an image for its toolbar (placement, size, order, description, delete); click a link to edit it.
   visual.addEventListener("click", function (ev) {
-    if (selectedImg) selectedImg.classList.remove("is-selected");
-    selectedImg = ev.target.nodeName === "IMG" ? ev.target : null;
-    $("ed-img-tools").hidden = !selectedImg;
-    if (selectedImg) {
-      selectedImg.classList.add("is-selected");
-      $("ed-align").value = PLACEMENTS.find(function (p) { return selectedImg.classList.contains(p); }) || "";
-      $("ed-width").value = selectedImg.getAttribute("width") || "";
-      $("ed-alt").value = selectedImg.getAttribute("alt") || "";
-    }
+    selectImage(ev.target.nodeName === "IMG" ? ev.target : null);
     var a = closestIn(ev.target, ["A"]);
     if (a && !has(a, "headerlink")) { ev.preventDefault(); openLink(a); }
   });
-  function applyToImage() {
-    if (!selectedImg) return;
-    PLACEMENTS.forEach(function (p) { selectedImg.classList.remove(p); });
-    if ($("ed-align").value) selectedImg.classList.add($("ed-align").value);
-    if ($("ed-width").value) selectedImg.setAttribute("width", $("ed-width").value); else selectedImg.removeAttribute("width");
-    selectedImg.setAttribute("alt", $("ed-alt").value);
-    fromVisual();
+  var imgBar = $("ed-imgbar");
+  function selectImage(img) {
+    if (selectedImg) selectedImg.classList.remove("is-selected");
+    selectedImg = img;
+    imgBar.hidden = !img;
+    if (!img) return;
+    img.classList.add("is-selected");
+    $("ed-alt").value = img.getAttribute("alt") || "";
+    refreshImgBar();
   }
-  ["ed-align", "ed-width", "ed-alt"].forEach(function (id) { $(id).addEventListener("input", applyToImage); });
+  // Light up the image's current placement and size, and sit the bar just under the image.
+  function refreshImgBar() {
+    var place = PLACEMENTS.find(function (p) { return has(selectedImg, p); }) || "", w = selectedImg.getAttribute("width") || "";
+    imgBar.querySelectorAll("[data-place]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.place === place)); });
+    imgBar.querySelectorAll("[data-size]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.size === w)); });
+    var r = selectedImg.getBoundingClientRect(), page = $("ed-visual-wrap").getBoundingClientRect();
+    imgBar.style.left = Math.max(8, Math.min(r.left + r.width / 2 - imgBar.offsetWidth / 2 - page.left, page.width - imgBar.offsetWidth - 8)) + "px";
+    imgBar.style.top = (r.bottom - page.top + 10) + "px";
+  }
+  // Images sit in their own paragraph, and a left/right image wraps the paragraphs after it,
+  // so moving it past a paragraph picks which text wraps around it.
+  function moveImage(img, dir) {
+    var blk = topBlock(img), sib = dir < 0 ? blk.previousElementSibling : blk.nextElementSibling;
+    if (!sib) return;
+    var item = blk;
+    if (blk.nodeName === "P" && blk.textContent.trim()) { item = document.createElement("p"); item.appendChild(img); } // leave text that shared its paragraph behind
+    visual.insertBefore(item, dir < 0 ? sib : sib.nextSibling);
+  }
+  imgBar.addEventListener("click", function (ev) {
+    var b = ev.target.closest("button"), img = selectedImg;
+    if (!b || !img) return;
+    if (b.dataset.place) { PLACEMENTS.forEach(function (p) { img.classList.remove(p); }); img.classList.add(b.dataset.place); }
+    if (b.dataset.size) img.setAttribute("width", b.dataset.size);
+    if (b.dataset.move) moveImage(img, +b.dataset.move);
+    if (b.hasAttribute("data-delete")) { var blk = topBlock(img); img.remove(); if (isEmptyBlock(blk)) blk.remove(); selectImage(null); }
+    fromVisual();
+    if (selectedImg) refreshImgBar();
+  });
+  $("ed-alt").addEventListener("input", function () { if (selectedImg) { selectedImg.setAttribute("alt", this.value); fromVisual(); } });
+  $("ed-alt").addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === "Escape") { ev.preventDefault(); selectImage(null); } });
 
   // Paste: images become uploads; text arrives plain, so pasted documents don't bring their styling.
   visual.addEventListener("paste", function (ev) {
@@ -660,11 +684,13 @@
   });
   visual.addEventListener("input", function () {
     if (!visual.firstElementChild && !visual.textContent) { visual.innerHTML = "<p><br></p>"; placeCaret(visual.firstChild, false); }
+    if (selectedImg && !visual.contains(selectedImg)) selectImage(null);
     checkSlash(); fromVisual();
   });
   visual.addEventListener("blur", function () { setTimeout(function () { if (!menu.el.contains(document.activeElement)) hideMenu(); }, 150); });
   document.addEventListener("mousedown", function (ev) {
     if (!linkBox.hidden && !linkBox.contains(ev.target)) closeLink(false);
+    if (selectedImg && !visual.contains(ev.target) && !imgBar.contains(ev.target)) selectImage(null);
   });
   source.addEventListener("input", fromSource);
   document.querySelectorAll("[data-mode]").forEach(function (b) { b.addEventListener("click", function () { setMode(b.dataset.mode); }); });

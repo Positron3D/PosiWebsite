@@ -11,7 +11,7 @@ The team has a visual editor at an **unlisted link**; ask a team member for it. 
 
 - **Type `/`** on an empty line for the block menu: headings, lists, callouts, collapsibles, tabs, tables, code, images, videos and more. Keep typing to filter, then press Enter.
 - **Markdown shortcuts work as you type:** `## ` heading, `### ` subheading, `- ` list, `1. ` numbered list, `[] ` tasks, `> ` quote. `---` or ` ``` ` followed by Enter gives a divider or a code block.
-- **Images:** drag them in, paste them, or use the image button. Choose the placement (wrap left or right, centred, full width) and size first. Click an image to change its placement, size or description.
+- **Images:** drag them in, paste them, or use the image button. New images use the placement and size picked in the toolbar. Click an image for its own toolbar: wrap it left or right, centre it or make it full width, pick a size, move it up or down a paragraph, describe it, or delete it. A left or right image wraps the text that comes after it, so move it up to sit beside the paragraph you want.
 - **Select any text** and a floating toolbar appears with bold, italic, strikethrough, highlight, code, link, headings and quote.
 - **Links:** select text and press Ctrl/⌘+K. Click a link to edit, open or remove it.
 - **The Markdown tab** shows the raw text if you prefer it.

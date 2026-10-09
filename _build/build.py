@@ -775,6 +775,9 @@ EDITOR_ICONS = {
     'video': '<rect x="3" y="3" width="18" height="18" rx="2" /> <path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z" />',
     'toc': '<path d="M8 5h13" /> <path d="M13 12h8" /> <path d="M13 19h8" /> <path d="M3 10a2 2 0 0 0 2 2h3" /> <path d="M3 5v12a2 2 0 0 0 2 2h3" />',
     'hr': '<path d="M5 12h14" />',
+    'up': '<path d="m5 12 7-7 7 7" /> <path d="M12 19V5" />',
+    'down': '<path d="M12 5v14" /> <path d="m19 12-7 7-7-7" />',
+    'trash': '<path d="M3 6h18" /> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />',
 }
 def _icon(cmd):
     return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + EDITOR_ICONS[cmd] + '</svg>'
@@ -818,7 +821,6 @@ editor_body = '''  <section class="section section--tight editor">
           <span class="editor__hint">New images:</span>
           <label>Placement <select id="ed-align"><option value="right">Right, text wraps</option><option value="left">Left, text wraps</option><option value="center">Centred</option><option value="full">Full width</option><option value="wide">Extra wide</option><option value="">Inline</option></select></label>
           <label>Size <select id="ed-width"><option value="240">Small</option><option value="320" selected>Medium</option><option value="480">Large</option><option value="">Original</option></select></label>
-          <span id="ed-img-tools" hidden><label>Description <input id="ed-alt" placeholder="What the image shows"></label> <em>Editing the selected image</em></span>
           <span class="editor__hint editor__tip">Type <kbd>/</kbd> for blocks · <kbd>##</kbd> <kbd>-</kbd> <kbd>&gt;</kbd> then space to format · drag or paste images in</span>
         </div>
       </div>
@@ -829,6 +831,7 @@ editor_body = '''  <section class="section section--tight editor">
         </div>
         <div class="editor__menu" id="ed-menu" role="listbox" aria-label="Insert a block" hidden></div>
         <div class="editor__bubble" id="ed-bubble" role="toolbar" aria-label="Format selection" hidden><button type="button" data-cmd="bold" aria-pressed="false">''' + _icon("bold") + '''</button><button type="button" data-cmd="italic" aria-pressed="false">''' + _icon("italic") + '''</button><button type="button" data-cmd="strike" aria-pressed="false">''' + _icon("strike") + '''</button><button type="button" data-cmd="mark" aria-pressed="false">''' + _icon("mark") + '''</button><button type="button" data-cmd="code" aria-pressed="false">''' + _icon("code") + '''</button><button type="button" data-cmd="link" aria-pressed="false">''' + _icon("link") + '''</button><span class="editor__bubble-sep"></span><button type="button" data-cmd="h2" aria-pressed="false">''' + _icon("h2") + '''</button><button type="button" data-cmd="h3" aria-pressed="false">''' + _icon("h3") + '''</button><button type="button" data-cmd="quote" aria-pressed="false">''' + _icon("quote") + '''</button></div>
+        <div class="editor__bubble editor__imgbar is-below" id="ed-imgbar" role="toolbar" aria-label="Selected image" hidden><button type="button" class="is-text" data-place="left" title="Left, text wraps around it">Left</button><button type="button" class="is-text" data-place="center" title="Centred, on its own line">Centre</button><button type="button" class="is-text" data-place="right" title="Right, text wraps around it">Right</button><button type="button" class="is-text" data-place="full" title="Full width of the text">Full</button><button type="button" class="is-text" data-place="wide" title="Wider than the text">Wide</button><span class="editor__bubble-sep"></span><button type="button" class="is-text" data-size="240" title="Small">S</button><button type="button" class="is-text" data-size="320" title="Medium">M</button><button type="button" class="is-text" data-size="480" title="Large">L</button><span class="editor__bubble-sep"></span><button type="button" data-move="-1" title="Move up a paragraph" aria-label="Move up a paragraph">''' + _icon("up") + '''</button><button type="button" data-move="1" title="Move down a paragraph" aria-label="Move down a paragraph">''' + _icon("down") + '''</button><span class="editor__bubble-sep"></span><input id="ed-alt" placeholder="Describe the image" aria-label="Image description"><button type="button" data-delete title="Delete image" aria-label="Delete image">''' + _icon("trash") + '''</button></div>
         <div class="editor__linkbox" id="ed-linkbox" hidden>
           <input id="ed-link-url" placeholder="Paste or type a link" aria-label="Link address">
           <button type="button" class="btn btn--sm" id="ed-link-apply">Apply</button>
