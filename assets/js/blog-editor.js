@@ -182,6 +182,20 @@
 
   // ---------- rendering and syncing ----------
   function save() { try { localStorage.setItem(STORE, compose()); } catch (e) { /* storage blocked: no autosave */ } }
+  // Added images are kept in IndexedDB beside the draft. Without them, a reload shows each
+  // image's description as text where the photo was.
+  function imageStore(fn) {
+    return new Promise(function (done) {
+      var r = indexedDB.open(STORE, 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore("images"); };
+      r.onsuccess = function () {
+        var tx = r.result.transaction("images", "readwrite");
+        tx.oncomplete = tx.onerror = tx.onabort = function () { r.result.close(); done(); };
+        fn(tx.objectStore("images"));
+      };
+      r.onerror = r.onblocked = function () { done(); };
+    }).catch(function () { /* storage blocked: images last this session only */ });
+  }
 
   function refreshHeader() {
     $("ed-filename").textContent = "Blog/" + fileName();
@@ -588,7 +602,9 @@
       var base = (f.name || "image.png").toLowerCase().replace(/[^a-z0-9.]+/g, "-"), name = base, n = 2;
       while (images[name]) name = base.replace(/(\.[a-z0-9]+)?$/, "-" + n++ + "$1");
       images[name] = { url: URL.createObjectURL(f), file: f };
-      var snippet = "![Describe the image](" + name + ")" + placementAttrs();
+      imageStore(function (s) { s.put(f, name); });
+      // Empty, so the Description box shows its placeholder; prefilled text got typed onto instead of replaced.
+      var snippet = "![](" + name + ")" + placementAttrs();
       if (mode === "visual") insertBlockVisual(snippet); else insertSource("\n", snippet, "\n");
       if (!field("cover")) $("ed-cover").value = name;
     });
@@ -703,7 +719,10 @@
       var post = entries.filter(function (e) { return /\.md$/i.test(e.name); })[0];
       if (!post) throw new Error("no .md file in the zip");
       entries.forEach(function (e) {
-        if (e !== post && /\.(jpe?g|png|webp|gif|avif)$/i.test(e.name)) images[e.name] = { url: URL.createObjectURL(e.blob), file: e.blob };
+        if (e !== post && /\.(jpe?g|png|webp|gif|avif)$/i.test(e.name)) {
+          images[e.name] = { url: URL.createObjectURL(e.blob), file: e.blob };
+          imageStore(function (s) { s.put(e.blob, e.name); });
+        }
       });
       return post.blob.text().then(load);
     }).catch(function (e) { setStatus("Couldn't open that zip: " + (e.message || e), true); });
@@ -759,7 +778,11 @@
   }
 
   $("ed-new").addEventListener("click", function () {
-    if (!md.trim() || window.confirm("Start a new post? The current draft is cleared from this browser.")) load("date: " + today() + "\n\n");
+    if (!md.trim() || window.confirm("Start a new post? The current draft is cleared from this browser.")) {
+      images = {};
+      imageStore(function (s) { s.clear(); });
+      load("date: " + today() + "\n\n");
+    }
   });
   $("ed-upload").href = UPLOAD_URL;
   FIELDS.concat(["draft"]).forEach(function (k) { $("ed-" + k).addEventListener("input", validate); });
@@ -769,6 +792,12 @@
   try { saved = localStorage.getItem(STORE); } catch (e) { /* storage blocked */ }
   document.execCommand("defaultParagraphSeparator", false, "p");
   load(saved || "date: " + today() + "\n\n");
+  var restored = imageStore(function (s) {
+    s.openCursor().onsuccess = function (ev) {
+      var c = ev.target.result;
+      if (c) { images[c.key] = { url: URL.createObjectURL(c.value), file: c.value }; c.continue(); }
+    };
+  });
   visual.innerHTML = '<p class="editor__loading">Loading the editor (the first load takes a few seconds)…</p>';
   visual.contentEditable = "false";
   setStatus("Loading the editor…");
@@ -783,6 +812,8 @@
         return fetch("assets/py/blogmd.py").then(function (r) { return r.text(); });
       }).then(function (code) {
         p.FS.writeFile("/home/pyodide/blogmd.py", code);
+        return restored;
+      }).then(function () {
         py = p;
         visual.contentEditable = "true";
         if (mode === "visual") renderVisual(); else validate();
