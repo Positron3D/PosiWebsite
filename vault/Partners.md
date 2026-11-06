@@ -1,7 +1,7 @@
 ---
 type: reference
 title: Partners
-updated: 2026-10-03
+updated: 2026-11-05
 tags: [positron, partners, sponsors]
 ---
 
@@ -34,3 +34,4 @@ KB3D is also a kit retailer on `positron.html` (and the exclusive Posi-Wrap part
 - 2026-09-29: KB3D added as a project partner. The partner grid became a centred flex layout, so an incomplete last row is centred (4, 2 and 2 columns on desktop, tablet and phone, with compact cards on phones). Checked at 1366, 768, 412, 360 and 1920 px.
 - 2026-10-02: Numakers removed.
 - 2026-10-03: Numakers re-added, linking to `https://numakers.com/Positron3d`.
+- 2026-11-05: A 3DPrintTopia event photo (`3dprinttopia-sponsors.jpg`, two Positrons with partner plates) added under the partner grid, full container width with alt text and no caption (`.section-photo` in `style.css`).
