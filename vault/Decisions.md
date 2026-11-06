@@ -1,13 +1,20 @@
 ---
 type: log
 title: Decisions
-updated: 2026-10-03
+updated: 2026-11-05
 tags: [positron, decisions]
 ---
 
 # Decisions
 
 Newest first. One entry per styling or process call, with the reason.
+
+## 2026-11-05: 3DPrintTopia photo under the partner grid
+
+- The team's own photo of two Positrons at 3DPrintTopia, with partner plates in front, sits at full container width below the partner cards on the homepage. It shows the partners alongside the hardware at an event, which the brand manual asks photography to show (portability, events).
+- No caption, alt text only. It's the team's photo, so no `via @handle` credit applies (BRAND_MANUAL §7.4 covers community photos).
+- Styled by a reusable `.section-photo` class (card radius, `--shadow`, 46px top margin to match the section intro's spacing) rather than inline styles.
+- The image was resized to 2000×1333 and saved as a quality-60 JPEG (346 KB). No other edits.
 
 ## 2026-10-03: Numakers back as a partner
 
